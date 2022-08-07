@@ -1,0 +1,102 @@
+{
+    "name": "@nlib/negotiate",
+    "publishConfig": {
+        "access": "public"
+    },
+    "version": "0.0.0",
+    "license": "Apache-2.0",
+    "author": {
+        "name": "Kei Ito",
+        "email": "kei.itof@gmail.com",
+        "url": "https://github.com/kei-ito"
+    },
+    "homepage": "https://github.com/nlibjs/negotiate",
+    "repository": "https://github.com/nlibjs/negotiate",
+    "type": "commonjs",
+    "main": "./cjs/index.js",
+    "exports": {
+        "import": "./esm/index.mjs",
+        "require": "./cjs/index.js"
+    },
+    "files": [
+        "cjs",
+        "esm",
+        "!**/*.test.*"
+    ],
+    "scripts": {
+        "test": "run-s test:*",
+        "test:type": "tsc --noEmit",
+        "test:jest": "jest",
+        "lint": "eslint --ext .ts --ext .js src",
+        "build": "run-s build:*",
+        "build:index": "nlib-indexen --output src/index.ts \"./**/*.ts\"",
+        "build:esm": "run-s build:esm:*",
+        "build:esm:tsc": "tsc --project tsconfig.esm.json",
+        "build:esm:esmify": "nlib-esmify \"./esm/**/*\"",
+        "build:cjs": "tsc --project tsconfig.cjs.json",
+        "version": "run-s build:index version:*",
+        "version:changelog": "nlib-changelog --output CHANGELOG.md",
+        "version:add": "git add ."
+    },
+    "devDependencies": {
+        "@nlib/changelog": "0.2.3",
+        "@nlib/eslint-config": "3.19.4",
+        "@nlib/esmify": "0.3.0",
+        "@nlib/githooks": "0.1.0",
+        "@nlib/indexen": "0.2.5",
+        "@nlib/lint-commit": "0.2.0",
+        "@types/eslint": "8.4.5",
+        "@types/jest": "28.1.6",
+        "eslint": "8.21.0",
+        "eslint-plugin-jest": "26.7.0",
+        "jest": "28.1.3",
+        "lint-staged": "13.0.3",
+        "npm-run-all": "4.1.5",
+        "ts-jest": "28.0.7",
+        "typescript": "4.7.4"
+    },
+    "jest": {
+        "roots": [
+            "<rootDir>/src"
+        ],
+        "moduleFileExtensions": [
+            "js",
+            "ts"
+        ],
+        "preset": "ts-jest/presets/js-with-ts",
+        "collectCoverage": true
+    },
+    "eslintConfig": {
+        "extends": [
+            "@nlib/eslint-config"
+        ],
+        "overrides": [
+            {
+                "files": [
+                    "*.test.ts"
+                ],
+                "plugins": [
+                    "jest"
+                ],
+                "env": {
+                    "jest/globals": true
+                },
+                "rules": {
+                    "@nlib/no-globals": "off",
+                    "max-lines-per-function": "off"
+                }
+            }
+        ]
+    },
+    "lint-staged": {
+        "*!(.d).{ts,tsx,js,mjs,cjs,jsx}": "eslint"
+    },
+    "renovate": {
+        "extends": [
+            "github>nlibjs/renovate-config"
+        ]
+    },
+    "dependencies": {
+        "@nlib/typing": "0.4.11"
+    }
+}
