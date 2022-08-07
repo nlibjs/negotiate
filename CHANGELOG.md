@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.1.1 (2022-08-07)
+
+### Bug Fixes
+
+- badge ([9a2f8b2](https://github.com/nlibjs/negotiate/commit/9a2f8b27392ce6bc2b20351c54fbc1831fe61e02))
+
+
 ## v0.1.0 (2022-08-07)
 
 ### Features
