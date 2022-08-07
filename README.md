@@ -1,6 +1,6 @@
 # @nlib/negotiate
 
-![Test](https://github.com/nlibjs/negotiate/workflows/Test/badge.svg)
+[![.github/workflows/test.yml](https://github.com/nlibjs/negotiate/actions/workflows/test.yml/badge.svg)](https://github.com/nlibjs/negotiate/actions/workflows/test.yml)
 [![codecov](https://codecov.io/gh/nlibjs/negotiate/branch/master/graph/badge.svg)](https://codecov.io/gh/nlibjs/negotiate)
 
 Utilities for content negotiation described in [Section 5.3 of RFC 7231].
