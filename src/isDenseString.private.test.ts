@@ -1,5 +1,5 @@
 import {LATIN_CAPITAL_LETTER_A} from '@nlib/typing';
-import {isDenseString} from './isDenseString';
+import {isDenseString} from './isDenseString.private';
 
 /**
  * https://en.wikipedia.org/wiki/Whitespace_character#Unicode

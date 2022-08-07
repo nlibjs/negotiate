@@ -1,5 +1,5 @@
 import {splitString} from '@nlib/typing';
-import {isDenseString} from './isDenseString';
+import {isDenseString} from './isDenseString.private';
 
 // eslint-disable-next-line @nlib/no-globals
 const {Error} = globalThis;
