@@ -97,6 +97,6 @@
         ]
     },
     "dependencies": {
-        "@nlib/typing": "0.4.11"
+        "@nlib/typing": "0.5.7"
     }
 }
