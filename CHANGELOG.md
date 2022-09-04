@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.1.2 (2022-09-04)
+
+### Dependency Upgrades
+
+- uninstall @nlib/typing ([a941cbf](https://github.com/nlibjs/negotiate/commit/a941cbf2408790691c09fc4d4954187ae5fc5768))
+
+
 ## v0.1.1 (2022-08-07)
 
 ### Bug Fixes
