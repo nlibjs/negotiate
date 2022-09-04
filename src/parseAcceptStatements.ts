@@ -1,4 +1,3 @@
-import {splitString} from '@nlib/typing';
 import {parseNegotiationItem} from './parseNegotiationItem';
 
 // eslint-disable-next-line @nlib/no-globals
@@ -26,7 +25,7 @@ export const parseAcceptStatements = function* (
     acceptStatements: string,
     loose = false,
 ): Generator<ParseAcceptResult<string>> {
-    for (const {value: statement} of splitString(acceptStatements, ',')) {
+    for (const statement of acceptStatements.split(',')) {
         try {
             const {value, parameters} = parseNegotiationItem(statement);
             const q = Number.parseFloat(parameters.q || '1');

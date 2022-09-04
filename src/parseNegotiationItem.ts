@@ -1,8 +1,5 @@
-import {splitString} from '@nlib/typing';
-import {isDenseString} from './isDenseString.private';
-
-// eslint-disable-next-line @nlib/no-globals
 const {Error} = globalThis;
+const DenseStringRegExp = /^[^\s\x85\u180e\u200b-\u200d\u2060]+$/;
 
 export interface ParsedNegotiationItem {
     value: string,
@@ -26,18 +23,18 @@ export const parseNegotiationItem = (input: string): ParsedNegotiationItem => {
         index = input.length;
     }
     const value = input.slice(0, index);
-    if (!isDenseString(value)) {
+    if (!DenseStringRegExp.test(value)) {
         throw new Error('InvalidValue');
     }
     const parameters: Record<string, string> = {};
     if (0 < semiColonIndex) {
-        for (const {value: parameter} of splitString(input.slice(semiColonIndex + 1) || ' ', ';')) {
+        for (const parameter of (input.slice(semiColonIndex + 1) || ' ').split(';')) {
             const equalIndex = parameter.indexOf('=');
             if (equalIndex < 0) {
                 throw new Error('InvalidNegotiationParameter');
             }
             const attribute = parameter.slice(0, equalIndex).trimStart().toLowerCase();
-            if (!isDenseString(attribute)) {
+            if (!DenseStringRegExp.test(attribute)) {
                 throw new Error('InvalidAttribute');
             }
             let attributeValue = parameter.slice(equalIndex + 1).trimEnd();
@@ -48,7 +45,7 @@ export const parseNegotiationItem = (input: string): ParsedNegotiationItem => {
                     throw new Error('InvalidQuote');
                 }
             }
-            if (!isDenseString(attributeValue)) {
+            if (!DenseStringRegExp.test(attributeValue)) {
                 throw new Error('InvalidAttributeValue');
             }
             parameters[attribute] = attributeValue;
