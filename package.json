@@ -47,7 +47,7 @@
         "@nlib/lint-commit": "0.2.0",
         "@types/eslint": "8.4.10",
         "@types/jest": "28.1.8",
-        "eslint": "8.28.0",
+        "eslint": "8.29.0",
         "eslint-plugin-jest": "27.1.6",
         "jest": "28.1.3",
         "lint-staged": "13.0.4",
