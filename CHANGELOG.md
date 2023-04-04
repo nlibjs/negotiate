@@ -1,5 +1,16 @@
 # Changelog
 
+## v0.1.4 (2023-04-04)
+
+### Bug Fixes
+
+- defaultMatcher ([1bfe648](https://github.com/nlibjs/negotiate/commit/1bfe64852c33c8e5aa98e717943804afcb9184fd))
+
+### Tests
+
+- add a test for single-star pattern ([3992ec7](https://github.com/nlibjs/negotiate/commit/3992ec72f8877a17998b9b97347cd81a47600b09))
+
+
 ## v0.1.3 (2023-04-04)
 
 ### Features
