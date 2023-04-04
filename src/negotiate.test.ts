@@ -50,3 +50,35 @@ test('negotiate an accept header value (highest)', () => {
         ),
     ).toBe('text/html');
 });
+test('any', () => {
+    expect(
+        negotiate(
+            ['foo'],
+            'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+        ),
+    ).toBe('foo');
+});
+test('any/any', () => {
+    expect(
+        negotiate(
+            ['any/any'],
+            'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
+        ),
+    ).toBe('any/any');
+});
+test('backward', () => {
+    expect(
+        negotiate(
+            ['aaa/bbb', 'aaa/ccc', 'xxx/yyy', 'zzz/yyy'],
+            'text/html,application/xhtml+xml,application/any;q=0.9,*/yyy,image/webp,image/apng',
+        ),
+    ).toBe('xxx/yyy');
+});
+test('forward', () => {
+    expect(
+        negotiate(
+            ['aaa/bbb', 'aaa/ccc', 'xxx/yyy', 'zzz/yyy'],
+            'text/html,application/xhtml+xml,application/any;q=0.9,xxx/*,image/webp,image/apng',
+        ),
+    ).toBe('xxx/yyy');
+});

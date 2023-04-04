@@ -7,13 +7,27 @@ export interface NegotiateMatcher<Type extends string> {
 const defaultMatcher = <Type extends string>(
     candidateList: ReadonlyArray<Type>,
     negotiateValue: string,
-): Type | null | undefined => {
-    for (const value of candidateList) {
-        if (value === negotiateValue) {
-            return value;
-        }
+): Type | null => {
+    if (negotiateValue === '*') {
+        return candidateList[0];
     }
-    return null;
+    const backward = negotiateValue.startsWith('*') ? 2 : 0;
+    const forward = negotiateValue.endsWith('*') ? 1 : 0;
+    const pattern = negotiateValue.slice(backward ? 1 : 0, forward ? -1 : negotiateValue.length);
+    switch (backward + forward) {
+    case 3:
+        // @example */*
+        return candidateList.find((item) => item.includes(pattern)) || null;
+    case 2:
+        // @example */bbb
+        return candidateList.find((item) => item.endsWith(pattern)) || null;
+    case 1:
+        // @example aaa/*
+        return candidateList.find((item) => item.startsWith(pattern)) || null;
+    default:
+        // @example aaa/bbb
+        return candidateList.find((item) => item === pattern) || null;
+    }
 };
 
 /**
