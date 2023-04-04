@@ -1,5 +1,21 @@
 # Changelog
 
+## v0.1.3 (2023-04-04)
+
+### Features
+
+- allow null | undefined ([eb6cc9c](https://github.com/nlibjs/negotiate/commit/eb6cc9c1ad39ce4edacd629f8254cb62966efb90))
+
+### Dependency Upgrades
+
+- ts-jest:29.0.5→29.1.0 typescript:4.9.5→5.0.3 ([78f3c84](https://github.com/nlibjs/negotiate/commit/78f3c8427fa1a06fc0165d923e8e7904941cc067))
+- upgrade dependencies ([5521039](https://github.com/nlibjs/negotiate/commit/552103910cf5c4685780df8fc6be47bde015f057))
+- typescript:4.8.4→4.9.4 ([00d23e8](https://github.com/nlibjs/negotiate/commit/00d23e83009017a5f8d5b3896e2d8e9670b92274))
+- @nlib/esmify:0.3.2→0.3.3 ([6a82a01](https://github.com/nlibjs/negotiate/commit/6a82a0110b70b863c6e45eef57b123bc4b78cec7))
+- @nlib/changelog:0.2.3→0.2.4 ([01f3e79](https://github.com/nlibjs/negotiate/commit/01f3e792e64f5720245bc7af693cb64f3020f7ad))
+- @types/jest:28.1.8→29.2.5 eslint-plugin-jest:27.2.0→27.2.1 jest:28.1.3→29.3.1 ts-jest:28.0.8→29.0.3 ([2edd305](https://github.com/nlibjs/negotiate/commit/2edd305dbadf9f70e5d2e8f7bec880b0c348f6a1))
+
+
 ## v0.1.2 (2022-09-04)
 
 ### Dependency Upgrades
