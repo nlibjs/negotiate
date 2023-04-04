@@ -2,6 +2,8 @@ import {negotiate} from './negotiate';
 
 test('return null if the statement is empty', () => {
     expect(negotiate(['v1'], '')).toBe(null);
+    expect(negotiate(['v1'])).toBe(null);
+    expect(negotiate(['v1'], null)).toBe(null);
 });
 test('return v1', () => {
     expect(negotiate(['v1'], 'v1')).toBe('v1');

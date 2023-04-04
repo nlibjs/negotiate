@@ -22,9 +22,12 @@ const defaultMatcher = <Type extends string>(
  */
 export const negotiate = <Value extends string>(
     availableValues: ReadonlyArray<Value>,
-    acceptStatements: string,
+    acceptStatements?: string | null,
     valueMatcher: NegotiateMatcher<Value> = defaultMatcher,
 ): Value | null => {
+    if (!acceptStatements) {
+        return null;
+    }
     let result: Value | null = null;
     let maxQ = 0;
     for (const {value, q} of parseAcceptStatements(acceptStatements, true)) {
