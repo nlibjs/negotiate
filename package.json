@@ -29,11 +29,11 @@
     "test:jest": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
     "lint": "eslint src",
     "build": "run-s build:*",
-    "build:index": "nlib-indexen --output src/index.ts \"./**/*.ts\"",
-    "build:esm": "run-s build:esm:*",
-    "build:esm:tsc": "tsc --project tsconfig.esm.json",
-    "build:esm:esmify": "nlib-esmify \"./esm/**/*\"",
-    "build:cjs": "tsc --project tsconfig.cjs.json",
+    "build:index": "npx @nlib/indexen --output src/index.mts \"./**/*.mts\"",
+    "build:esm": "tsc",
+    "build:cjs": "run-s build:cjs:*",
+    "build:cjs:tsc": "tsc --project tsconfig.cjs.json",
+    "build:cjs:rename": "node rename-cjs.mjs",
     "version": "npx @nlib/changelog --output CHANGELOG.md && git add CHANGELOG.md"
   },
   "devDependencies": {
