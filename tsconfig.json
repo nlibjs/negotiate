@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
     "target": "ESNext",
-    "module": "ESNext",
-    "moduleResolution": "node",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
     "strict": true,
     "resolveJsonModule": true,
     "removeComments": true,
@@ -12,6 +12,8 @@
     "noImplicitReturns": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "incremental": true
-  }
+    "incremental": true,
+    "outDir": "esm"
+  },
+  "include": ["./src/**/*.mts"]
 }
