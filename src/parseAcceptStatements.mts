@@ -1,4 +1,4 @@
-import { parseNegotiationItem } from "./parseNegotiationItem.mjs";
+import { parseNegotiationItem } from './parseNegotiationItem.mjs';
 
 // eslint-disable-next-line @nlib/no-globals
 const { Error, Number } = globalThis;
@@ -25,10 +25,10 @@ export const parseAcceptStatements = function* (
   acceptStatements: string,
   loose = false,
 ): Generator<ParseAcceptResult<string>> {
-  for (const statement of acceptStatements.split(",")) {
+  for (const statement of acceptStatements.split(',')) {
     try {
       const { value, parameters } = parseNegotiationItem(statement);
-      const q = Number.parseFloat(parameters.q || "1");
+      const q = Number.parseFloat(parameters.q || '1');
       if (0 <= q && q <= 1) {
         yield { value, q };
       } else {

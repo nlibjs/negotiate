@@ -18,40 +18,40 @@ export interface ParsedNegotiationItem {
  */
 export const parseNegotiationItem = (input: string): ParsedNegotiationItem => {
   let index = 0;
-  const semiColonIndex = (index = input.indexOf(";"));
+  const semiColonIndex = (index = input.indexOf(';'));
   if (index < 0) {
     index = input.length;
   }
   const value = input.slice(0, index);
   if (!DenseStringRegExp.test(value)) {
-    throw new Error("InvalidValue");
+    throw new Error('InvalidValue');
   }
   const parameters: Record<string, string> = {};
   if (0 < semiColonIndex) {
-    for (const parameter of (input.slice(semiColonIndex + 1) || " ").split(
-      ";",
+    for (const parameter of (input.slice(semiColonIndex + 1) || ' ').split(
+      ';',
     )) {
-      const equalIndex = parameter.indexOf("=");
+      const equalIndex = parameter.indexOf('=');
       if (equalIndex < 0) {
-        throw new Error("InvalidNegotiationParameter");
+        throw new Error('InvalidNegotiationParameter');
       }
       const attribute = parameter
         .slice(0, equalIndex)
         .trimStart()
         .toLowerCase();
       if (!DenseStringRegExp.test(attribute)) {
-        throw new Error("InvalidAttribute");
+        throw new Error('InvalidAttribute');
       }
       let attributeValue = parameter.slice(equalIndex + 1).trimEnd();
       if (attributeValue.startsWith('"')) {
         if (attributeValue.endsWith('"')) {
           attributeValue = attributeValue.slice(1, -1);
         } else {
-          throw new Error("InvalidQuote");
+          throw new Error('InvalidQuote');
         }
       }
       if (!DenseStringRegExp.test(attributeValue)) {
-        throw new Error("InvalidAttributeValue");
+        throw new Error('InvalidAttributeValue');
       }
       parameters[attribute] = attributeValue;
     }

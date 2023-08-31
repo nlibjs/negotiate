@@ -1,4 +1,4 @@
-import { parseAcceptStatements } from "./parseAcceptStatements.mjs";
+import { parseAcceptStatements } from './parseAcceptStatements.mjs';
 
 export interface NegotiateMatcher<Type extends string> {
   (arr: ReadonlyArray<Type>, value: string): Type | null | undefined;
@@ -8,11 +8,11 @@ const defaultMatcher = <Type extends string>(
   candidateList: ReadonlyArray<Type>,
   negotiateValue: string,
 ): Type | null => {
-  if (negotiateValue === "*") {
+  if (negotiateValue === '*') {
     return candidateList[0];
   }
-  const backward = negotiateValue.startsWith("*") ? 2 : 0;
-  const forward = negotiateValue.endsWith("*") ? 1 : 0;
+  const backward = negotiateValue.startsWith('*') ? 2 : 0;
+  const forward = negotiateValue.endsWith('*') ? 1 : 0;
   const pattern = negotiateValue.slice(
     backward ? 1 : 0,
     forward ? -1 : negotiateValue.length,
