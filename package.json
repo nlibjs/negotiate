@@ -1,97 +1,97 @@
 {
-    "name": "@nlib/negotiate",
-    "publishConfig": {
-        "access": "public"
-    },
-    "version": "0.1.4",
-    "license": "Apache-2.0",
-    "author": {
-        "name": "Kei Ito",
-        "email": "kei.itof@gmail.com",
-        "url": "https://github.com/gjbkz"
-    },
-    "homepage": "https://github.com/nlibjs/negotiate",
-    "repository": "https://github.com/nlibjs/negotiate",
-    "type": "commonjs",
-    "main": "./cjs/index.js",
-    "exports": {
-        "import": "./esm/index.mjs",
-        "require": "./cjs/index.js"
-    },
-    "files": [
-        "cjs",
-        "esm",
-        "!**/*.test.*"
+  "name": "@nlib/negotiate",
+  "publishConfig": {
+    "access": "public"
+  },
+  "version": "0.1.4",
+  "license": "Apache-2.0",
+  "author": {
+    "name": "Kei Ito",
+    "email": "kei.itof@gmail.com",
+    "url": "https://github.com/gjbkz"
+  },
+  "homepage": "https://github.com/nlibjs/negotiate",
+  "repository": "https://github.com/nlibjs/negotiate",
+  "type": "commonjs",
+  "main": "./cjs/index.js",
+  "exports": {
+    "import": "./esm/index.mjs",
+    "require": "./cjs/index.js"
+  },
+  "files": [
+    "cjs",
+    "esm",
+    "!**/*.test.*"
+  ],
+  "scripts": {
+    "test": "run-s build test:*",
+    "test:type": "tsc --noEmit",
+    "test:jest": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "lint": "eslint src",
+    "build": "run-s build:*",
+    "build:index": "nlib-indexen --output src/index.ts \"./**/*.ts\"",
+    "build:esm": "run-s build:esm:*",
+    "build:esm:tsc": "tsc --project tsconfig.esm.json",
+    "build:esm:esmify": "nlib-esmify \"./esm/**/*\"",
+    "build:cjs": "tsc --project tsconfig.cjs.json",
+    "version": "npx @nlib/changelog --output CHANGELOG.md && git add CHANGELOG.md"
+  },
+  "devDependencies": {
+    "@nlib/changelog": "0.3.1",
+    "@nlib/eslint-config": "3.20.1",
+    "@nlib/esmify": "0.3.3",
+    "@nlib/githooks": "0.2.0",
+    "@nlib/indexen": "0.2.9",
+    "@nlib/lint-commit": "1.0.1",
+    "@types/eslint": "8.44.2",
+    "@types/jest": "29.5.4",
+    "eslint": "8.48.0",
+    "eslint-plugin-jest": "27.2.3",
+    "jest": "29.6.4",
+    "lint-staged": "14.0.1",
+    "npm-run-all": "4.1.5",
+    "prettier": "3.0.3",
+    "ts-jest": "29.1.1",
+    "typescript": "5.2.2"
+  },
+  "jest": {
+    "roots": [
+      "<rootDir>/esm"
     ],
-    "scripts": {
-        "test": "run-s test:*",
-        "test:type": "tsc --noEmit",
-        "test:jest": "jest",
-        "lint": "eslint --ext .ts --ext .js src",
-        "build": "run-s build:*",
-        "build:index": "nlib-indexen --output src/index.ts \"./**/*.ts\"",
-        "build:esm": "run-s build:esm:*",
-        "build:esm:tsc": "tsc --project tsconfig.esm.json",
-        "build:esm:esmify": "nlib-esmify \"./esm/**/*\"",
-        "build:cjs": "tsc --project tsconfig.cjs.json",
-        "version": "npx @nlib/changelog --output CHANGELOG.md && git add CHANGELOG.md"
-    },
-    "devDependencies": {
-        "@nlib/changelog": "0.3.1",
-        "@nlib/eslint-config": "3.20.1",
-        "@nlib/esmify": "0.3.3",
-        "@nlib/githooks": "0.2.0",
-        "@nlib/indexen": "0.2.9",
-        "@nlib/lint-commit": "1.0.1",
-        "@types/eslint": "8.44.2",
-        "@types/jest": "29.5.4",
-        "eslint": "8.48.0",
-        "eslint-plugin-jest": "27.2.3",
-        "jest": "29.6.4",
-        "lint-staged": "14.0.1",
-        "npm-run-all": "4.1.5",
-        "ts-jest": "29.1.1",
-        "typescript": "5.2.2"
-    },
-    "jest": {
-        "roots": [
-            "<rootDir>/src"
+    "testMatch": [
+      "**/*.test.mjs"
+    ],
+    "transform": {},
+    "collectCoverage": true
+  },
+  "eslintConfig": {
+    "extends": [
+      "@nlib/eslint-config"
+    ],
+    "overrides": [
+      {
+        "files": [
+          "*.test.*"
         ],
-        "moduleFileExtensions": [
-            "js",
-            "ts"
+        "plugins": [
+          "jest"
         ],
-        "preset": "ts-jest/presets/js-with-ts",
-        "collectCoverage": true
-    },
-    "eslintConfig": {
-        "extends": [
-            "@nlib/eslint-config"
-        ],
-        "overrides": [
-            {
-                "files": [
-                    "*.test.ts"
-                ],
-                "plugins": [
-                    "jest"
-                ],
-                "env": {
-                    "jest/globals": true
-                },
-                "rules": {
-                    "@nlib/no-globals": "off",
-                    "max-lines-per-function": "off"
-                }
-            }
-        ]
-    },
-    "lint-staged": {
-        "*!(.d).{ts,tsx,js,mjs,cjs,jsx}": "eslint"
-    },
-    "renovate": {
-        "extends": [
-            "github>nlibjs/renovate-config"
-        ]
-    }
+        "env": {
+          "jest/globals": true
+        },
+        "rules": {
+          "max-lines-per-function": "off"
+        }
+      }
+    ]
+  },
+  "lint-staged": {
+    "**/*": "prettier --write --ignore-unknown",
+    "**/*.*(m|c)+(j|t)s*(x)": "eslint"
+  },
+  "renovate": {
+    "extends": [
+      "github>nlibjs/renovate-config"
+    ]
+  }
 }
