@@ -44,7 +44,7 @@
         "@nlib/esmify": "0.3.3",
         "@nlib/githooks": "0.2.0",
         "@nlib/indexen": "0.2.7",
-        "@nlib/lint-commit": "0.2.0",
+        "@nlib/lint-commit": "1.0.1",
         "@types/eslint": "8.44.2",
         "@types/jest": "29.5.4",
         "eslint": "8.48.0",
