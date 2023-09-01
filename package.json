@@ -24,10 +24,9 @@
     "!**/*.test.*"
   ],
   "scripts": {
-    "test": "run-s build test:*",
+    "test": "run-s test:*",
     "test:type": "tsc --noEmit",
-    "test:esm": "node --test esm/",
-    "test:cjs": "node --test cjs/",
+    "test:unit": "mts-test --coverage src",
     "lint": "eslint src",
     "build": "run-s build:*",
     "build:index": "npx @nlib/indexen --output src/index.mts \"./**/*.mts\"",
@@ -44,6 +43,7 @@
     "@nlib/githooks": "0.2.0",
     "@nlib/indexen": "0.2.9",
     "@nlib/lint-commit": "1.0.1",
+    "@nlib/mts": "0.0.4",
     "@types/eslint": "8.44.2",
     "@types/node": "20.5.7",
     "eslint": "8.48.0",
