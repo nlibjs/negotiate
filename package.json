@@ -25,9 +25,8 @@
   ],
   "scripts": {
     "test": "run-s build test:*",
-    "test:type": "tsc --noEmit",
-    "test:esm": "node --test esm/",
-    "test:cjs": "node --test cjs/",
+    "test:esm": "node --test esm",
+    "test:cjs": "node --test cjs",
     "lint": "eslint src",
     "build": "run-s build:*",
     "build:index": "npx @nlib/indexen --output src/index.mts \"./**/*.mts\"",

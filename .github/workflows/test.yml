@@ -1,7 +1,4 @@
 on: [push, pull_request]
-concurrency:
-  group: ci-${{ github.ref }}
-  cancel-in-progress: true
 jobs:
   Lint:
     runs-on: ubuntu-latest
@@ -23,5 +20,8 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
-      - run: npm test
+      - run: npm run test:cjs
+      - run: npm run build:esm -- --sourceMap
+      - run: npx c8 npm run test:esm
+      - run: npx c8 report --reporter=text-lcov > coverage.lcov
       - uses: codecov/codecov-action@v3
