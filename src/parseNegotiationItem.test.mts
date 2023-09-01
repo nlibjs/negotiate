@@ -1,73 +1,81 @@
+import { test } from 'node:test';
+import * as assert from 'node:assert';
 import { parseNegotiationItem } from './parseNegotiationItem.mjs';
 
 test('accept text/html', () => {
-  expect(parseNegotiationItem('text/html')).toMatchObject({
+  assert.deepStrictEqual(parseNegotiationItem('text/html'), {
     value: 'text/html',
     parameters: {},
   });
 });
 test('accept text/*', () => {
-  expect(parseNegotiationItem('text/*')).toMatchObject({
+  assert.deepStrictEqual(parseNegotiationItem('text/*'), {
     value: 'text/*',
     parameters: {},
   });
 });
 test('accept */*', () => {
-  expect(parseNegotiationItem('*/*')).toMatchObject({
+  assert.deepStrictEqual(parseNegotiationItem('*/*'), {
     value: '*/*',
     parameters: {},
   });
 });
 test('accept /html', () => {
-  expect(parseNegotiationItem('/html')).toMatchObject({
+  assert.deepStrictEqual(parseNegotiationItem('/html'), {
     value: '/html',
     parameters: {},
   });
 });
 test('reject sparse string', () => {
-  expect(() => {
-    parseNegotiationItem(' text/html');
-  }).toThrow(/^InvalidValue/);
+  assert.throws(
+    () => parseNegotiationItem(' text/html'),
+    /^Error: InvalidValue/,
+  );
 });
 test('reject empty parameter', () => {
-  expect(() => {
-    parseNegotiationItem('text/html;');
-  }).toThrow(/^InvalidNegotiationParameter/);
+  assert.throws(
+    () => parseNegotiationItem('text/html;'),
+    /^Error: InvalidNegotiationParameter/,
+  );
 });
 test('accept a parameter', () => {
-  expect(parseNegotiationItem('text/html; q=0.9 ')).toMatchObject({
+  assert.deepStrictEqual(parseNegotiationItem('text/html; q=0.9 '), {
     value: 'text/html',
     parameters: { q: '0.9' },
   });
 });
 test('reject second empty parameter', () => {
-  expect(() => {
-    parseNegotiationItem('text/html;q=0.9;');
-  }).toThrow(/^InvalidNegotiationParameter/);
+  assert.throws(
+    () => parseNegotiationItem('text/html;q=0.9;'),
+    /^Error: InvalidNegotiationParameter/,
+  );
 });
 test('accept multiple parameters', () => {
-  expect(parseNegotiationItem('text/html;q=0.9;p=0.8')).toMatchObject({
+  assert.deepStrictEqual(parseNegotiationItem('text/html;q=0.9;p=0.8'), {
     value: 'text/html',
     parameters: { q: '0.9', p: '0.8' },
   });
 });
 test('reject spaces before equal signs', () => {
-  expect(() => {
-    parseNegotiationItem('text/html;q=0.9;p =0.8');
-  }).toThrow(/^InvalidAttribute/);
+  assert.throws(
+    () => parseNegotiationItem('text/html;q=0.9;p =0.8'),
+    /^Error: InvalidAttribute/,
+  );
 });
 test('reject spaces after equal signs', () => {
-  expect(() => {
-    parseNegotiationItem('text/html;q=0.9;p= 0.8');
-  }).toThrow(/^InvalidAttributeValue/);
+  assert.throws(
+    () => parseNegotiationItem('text/html;q=0.9;p= 0.8'),
+    /^Error: InvalidAttributeValue/,
+  );
 });
 test('accept the boundary paramter', () => {
-  expect(
+  assert.deepStrictEqual(
     parseNegotiationItem(
       'multipart/form-data; boundary=----WebKitFormBoundaryBD30bQglmASNpNSt',
     ),
-  ).toMatchObject({
-    value: 'multipart/form-data',
-    parameters: { boundary: '----WebKitFormBoundaryBD30bQglmASNpNSt' },
-  });
+    {
+      value: 'multipart/form-data',
+      parameters: { boundary: '----WebKitFormBoundaryBD30bQglmASNpNSt' },
+    },
+  );
 });
