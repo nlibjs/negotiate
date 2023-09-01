@@ -4,6 +4,7 @@
     "target": "ESNext",
     "module": "CommonJS",
     "moduleResolution": "Node",
+    "sourceMap": false,
     "outDir": "cjs"
   }
 }
