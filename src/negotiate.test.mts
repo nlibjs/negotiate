@@ -1,21 +1,23 @@
+import { test } from 'node:test';
+import * as assert from 'node:assert';
 import { negotiate } from './negotiate.mjs';
 
 test('return null if the statement is empty', () => {
-  expect(negotiate(['v1'], '')).toBe(null);
-  expect(negotiate(['v1'])).toBe(null);
-  expect(negotiate(['v1'], null)).toBe(null);
+  assert.equal(negotiate(['v1'], ''), null);
+  assert.equal(negotiate(['v1']), null);
+  assert.equal(negotiate(['v1'], null), null);
 });
 test('return v1', () => {
-  expect(negotiate(['v1'], 'v1')).toBe('v1');
+  assert.equal(negotiate(['v1'], 'v1'), 'v1');
 });
 test('return null if nothing matches', () => {
-  expect(negotiate(['v2'], 'v1')).toBe(null);
+  assert.equal(negotiate(['v2'], 'v1'), null);
 });
 test('return the highest', () => {
-  expect(negotiate(['v1', 'v2'], 'v1;q=0.9,v2;q=1')).toBe('v2');
+  assert.equal(negotiate(['v1', 'v2'], 'v1;q=0.9,v2;q=1'), 'v2');
 });
 test('return the first of same q', () => {
-  expect(negotiate(['v1', 'v2'], 'v1;q=0.9,v2;q=0.9')).toBe('v1');
+  assert.equal(negotiate(['v1', 'v2'], 'v1;q=0.9,v2;q=0.9'), 'v1');
 });
 const xMatcher = (list: ReadonlyArray<string>, value: string) => {
   if (value === 'x*') {
@@ -30,55 +32,62 @@ const xMatcher = (list: ReadonlyArray<string>, value: string) => {
   return null;
 };
 test('negotiate with matcher', () => {
-  expect(
+  assert.equal(
     negotiate(['v1', 'v2', 'x3'], 'v1;q=0.9,v2;q=0.9,x*;q=1', xMatcher),
-  ).toBe('x3');
+    'x3',
+  );
 });
 test('negotiate an accept header value', () => {
-  expect(
+  assert.equal(
     negotiate(
       ['text/html'],
       'text/html,image/avif,image/webp,image/apng,*/*;q=0.8',
     ),
-  ).toBe('text/html');
+    'text/html',
+  );
 });
 test('negotiate an accept header value (highest)', () => {
-  expect(
+  assert.equal(
     negotiate(
       ['text/html', 'image/webp'],
       'text/html,image/avif,image/webp,image/apng,*/*;q=0.8',
     ),
-  ).toBe('text/html');
+    'text/html',
+  );
 });
 test('any', () => {
-  expect(
+  assert.equal(
     negotiate(
       ['foo'],
       'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*;q=0.8,application/signed-exchange;v=b3;q=0.7',
     ),
-  ).toBe('foo');
+    'foo',
+  );
 });
 test('any/any', () => {
-  expect(
+  assert.equal(
     negotiate(
       ['any/any'],
       'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
     ),
-  ).toBe('any/any');
+    'any/any',
+  );
 });
 test('backward', () => {
-  expect(
+  assert.equal(
     negotiate(
       ['aaa/bbb', 'aaa/ccc', 'xxx/yyy', 'zzz/yyy'],
       'text/html,application/xhtml+xml,application/any;q=0.9,*/yyy,image/webp,image/apng',
     ),
-  ).toBe('xxx/yyy');
+    'xxx/yyy',
+  );
 });
 test('forward', () => {
-  expect(
+  assert.equal(
     negotiate(
       ['aaa/bbb', 'aaa/ccc', 'xxx/yyy', 'zzz/yyy'],
       'text/html,application/xhtml+xml,application/any;q=0.9,xxx/*,image/webp,image/apng',
     ),
-  ).toBe('xxx/yyy');
+    'xxx/yyy',
+  );
 });
