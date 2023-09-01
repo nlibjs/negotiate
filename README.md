@@ -1,7 +1,7 @@
 # @nlib/negotiate
 
 [![.github/workflows/test.yml](https://github.com/nlibjs/negotiate/actions/workflows/test.yml/badge.svg)](https://github.com/nlibjs/negotiate/actions/workflows/test.yml)
-[![codecov](https://codecov.io/gh/nlibjs/negotiate/branch/master/graph/badge.svg)](https://codecov.io/gh/nlibjs/negotiate)
+[![codecov](https://codecov.io/gh/nlibjs/negotiate/graph/badge.svg?token=uSsvlnhMEO)](https://codecov.io/gh/nlibjs/negotiate)
 
 Utilities for content negotiation described in [Section 5.3 of RFC 7231].
 
@@ -19,7 +19,7 @@ negotiate([], accept); // → null
 ## parseAcceptStatements
 
 ```typescript
-const generator = parseAcceptStatements('v1,v2;q=0.9,v3;q=0.8')
+const generator = parseAcceptStatements('v1,v2;q=0.9,v3;q=0.8');
 generator.next().value; // → {value: 'v1', q: 1}
 generator.next().value; // → {value: 'v2', q: 0.9}
 generator.next().value; // → {value: 'v3', q: 0.8}
@@ -29,6 +29,6 @@ generator.next(); // → {value: undefined, done: true}
 ## parseNegotiationItem
 
 ```typescript
-parseNegotiationItem('text/html;charset=utf-8;foo=1')
+parseNegotiationItem('text/html;charset=utf-8;foo=1');
 // → {value: 'text/html', parameters: {charset: 'utf-8', foo: '1'}}
 ```
