@@ -24,4 +24,4 @@ jobs:
       - run: npm run build:esm -- --sourceMap
       - run: npx c8 npm run test:esm
       - run: npx c8 report --reporter=text-lcov > coverage.lcov
-      - uses: codecov/codecov-action@v3
+      - uses: codecov/codecov-action@v4
