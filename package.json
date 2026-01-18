@@ -38,7 +38,7 @@
   },
   "devDependencies": {
     "@nlib/changelog": "0.3.2",
-    "@nlib/eslint-config": "3.20.2",
+    "@nlib/eslint-config": "3.20.5",
     "@nlib/esmify": "0.3.3",
     "@nlib/githooks": "0.2.2",
     "@nlib/indexen": "0.2.9",
