@@ -3,6 +3,17 @@
 [![.github/workflows/test.yml](https://github.com/nlibjs/negotiate/actions/workflows/test.yml/badge.svg)](https://github.com/nlibjs/negotiate/actions/workflows/test.yml)
 [![codecov](https://codecov.io/gh/nlibjs/negotiate/graph/badge.svg?token=uSsvlnhMEO)](https://codecov.io/gh/nlibjs/negotiate)
 
+**RFC-compliant HTTP content negotiation, made simple with TypeScript.**
+
+`@nlib/negotiate` parses `Accept`, `Accept-Language`, `Accept-Encoding`, and other HTTP request headers to help your server select the best response format for each client.
+
+- **RFC 7231 compliant** — faithful implementation of [Section 5.3 of RFC 7231]
+- **Wildcard support** — handles `*`, `type/*`, `*/subtype`, and `*/*` patterns
+- **Extensible** — plug in a custom matcher function to control how values are compared
+- **Fault-tolerant** — `loose` mode silently skips malformed header values to gracefully handle real-world client quirks
+- **Efficient** — exits early once a quality-1.0 match is found
+- **Dual package** — ships both ESM and CJS builds, ready for any modern JS environment
+
 Utilities for content negotiation described in [Section 5.3 of RFC 7231].
 
 [Section 5.3 of RFC 7231]: https://www.rfc-editor.org/rfc/rfc7231.html#section-5.3
