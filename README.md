@@ -3,16 +3,16 @@
 [![.github/workflows/test.yml](https://github.com/nlibjs/negotiate/actions/workflows/test.yml/badge.svg)](https://github.com/nlibjs/negotiate/actions/workflows/test.yml)
 [![codecov](https://codecov.io/gh/nlibjs/negotiate/graph/badge.svg?token=uSsvlnhMEO)](https://codecov.io/gh/nlibjs/negotiate)
 
-**RFC 7231 準拠の HTTP コンテントネゴシエーションを、TypeScript でシンプルに。**
+**RFC-compliant HTTP content negotiation, made simple with TypeScript.**
 
-`@nlib/negotiate` は、HTTP の `Accept` / `Accept-Language` / `Accept-Encoding` といったヘッダーを解析し、サーバーがクライアントに最適なレスポンス形式を選択するためのユーティリティライブラリです。
+`@nlib/negotiate` parses `Accept`, `Accept-Language`, `Accept-Encoding`, and other HTTP request headers to help your server select the best response format for each client.
 
-- **RFC 準拠** — [Section 5.3 of RFC 7231] で定義された仕様に忠実に実装
-- **ワイルドカード対応** — `*`, `type/*`, `*/subtype`, `*/*` の 4 パターンに対応
-- **拡張可能** — カスタムマッチャー関数でマッチングロジックを自由に差し替え可能
-- **寛容な解析** — `loose` モードで不正なヘッダー値をスキップし、実環境のリクエストに柔軟に対応
-- **高効率** — 品質値 1.0 のマッチが見つかり次第、早期リターンで処理を打ち切る最適化済み
-- **デュアルパッケージ** — ESM / CJS 両対応でモダンな JS エコシステムにそのまま組み込み可能
+- **RFC 7231 compliant** — faithful implementation of [Section 5.3 of RFC 7231]
+- **Wildcard support** — handles `*`, `type/*`, `*/subtype`, and `*/*` patterns
+- **Extensible** — plug in a custom matcher function to override matching logic
+- **Fault-tolerant** — `loose` mode silently skips malformed header values for real-world robustness
+- **Efficient** — short-circuits as soon as a quality-1.0 match is found
+- **Dual package** — ships both ESM and CJS builds, ready for any modern JS environment
 
 Utilities for content negotiation described in [Section 5.3 of RFC 7231].
 
