@@ -1,19 +1,19 @@
 {
-  "compilerOptions": {
-    "target": "ESNext",
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
-    "strict": true,
-    "resolveJsonModule": true,
-    "removeComments": true,
-    "declaration": true,
-    "sourceMap": false,
-    "noFallthroughCasesInSwitch": true,
-    "noImplicitReturns": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "incremental": true,
-    "outDir": "esm"
-  },
-  "include": ["./src/**/*.mts"]
+	"compilerOptions": {
+		"target": "ESNext",
+		"module": "NodeNext",
+		"moduleResolution": "NodeNext",
+		"strict": true,
+		"removeComments": true,
+		"declaration": true,
+		"sourceMap": false,
+		"noFallthroughCasesInSwitch": true,
+		"noImplicitReturns": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"allowImportingTsExtensions": true,
+		"emitDeclarationOnly": true,
+		"outDir": "./types"
+	},
+	"include": ["./src/**/*.ts"]
 }

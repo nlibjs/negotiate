@@ -1,78 +1,55 @@
 {
-  "name": "@nlib/negotiate",
-  "publishConfig": {
-    "access": "public"
-  },
-  "version": "0.1.4",
-  "license": "Apache-2.0",
-  "author": {
-    "name": "Kei Ito",
-    "email": "kei.itof@gmail.com",
-    "url": "https://github.com/gjbkz"
-  },
-  "homepage": "https://github.com/nlibjs/negotiate",
-  "repository": "https://github.com/nlibjs/negotiate",
-  "type": "commonjs",
-  "main": "./cjs/index.js",
-  "exports": {
-    "import": "./esm/index.mjs",
-    "require": "./cjs/index.js"
-  },
-  "files": [
-    "cjs",
-    "esm",
-    "!**/*.test.*"
-  ],
-  "scripts": {
-    "test": "run-s build test:*",
-    "test:esm": "node --test esm",
-    "test:cjs": "node --test cjs",
-    "lint": "eslint src",
-    "build": "run-s build:*",
-    "build:index": "npx @nlib/indexen --output src/index.mts \"./**/*.mts\"",
-    "build:esm": "tsc",
-    "build:cjs": "run-s build:cjs:*",
-    "build:cjs:tsc": "tsc --project tsconfig.cjs.json",
-    "build:cjs:rename": "node rename-cjs.mjs",
-    "version": "npx @nlib/changelog --output CHANGELOG.md && git add CHANGELOG.md"
-  },
-  "devDependencies": {
-    "@nlib/changelog": "0.3.2",
-    "@nlib/eslint-config": "3.20.2",
-    "@nlib/esmify": "0.3.3",
-    "@nlib/githooks": "0.2.2",
-    "@nlib/indexen": "0.2.9",
-    "@nlib/lint-commit": "1.0.1",
-    "@types/eslint": "8.56.12",
-    "@types/node": "25.2.3",
-    "eslint": "8.57.1",
-    "lint-staged": "14.0.1",
-    "npm-run-all": "4.1.5",
-    "prettier": "3.8.1",
-    "typescript": "5.5.4"
-  },
-  "eslintConfig": {
-    "extends": [
-      "@nlib/eslint-config"
-    ],
-    "overrides": [
-      {
-        "files": [
-          "*.test.*"
-        ],
-        "rules": {
-          "@typescript-eslint/no-floating-promises": "off"
-        }
-      }
-    ]
-  },
-  "lint-staged": {
-    "**/*": "prettier --write --ignore-unknown",
-    "**/*.*(m|c)+(j|t)s*(x)": "eslint"
-  },
-  "renovate": {
-    "extends": [
-      "github>nlibjs/renovate-config"
-    ]
-  }
+	"name": "@nlib/negotiate",
+	"description": "An RFC-compliant HTTP content negotiation library.",
+	"publishConfig": {
+		"access": "public"
+	},
+	"version": "0.1.4",
+	"license": "Apache-2.0",
+	"author": {
+		"name": "Kei Ito",
+		"email": "kei.itof@gmail.com",
+		"url": "https://github.com/gjbkz"
+	},
+	"homepage": "https://github.com/nlibjs/negotiate",
+	"repository": "https://github.com/nlibjs/negotiate",
+	"type": "module",
+	"exports": {
+		"./package.json": "./package.json",
+		".": {
+			"import": "./mjs/mod.mjs",
+			"require": "./cjs/mod.cjs",
+			"types": "./types/mod.d.ts"
+		}
+	},
+	"files": [
+		"cjs",
+		"mjs",
+		"types",
+		"!**/*.test.*"
+	],
+	"scripts": {
+		"test": "run-s build:index test:*",
+		"test:type": "tsc",
+		"test:unit": "node --test \"src/**/*.test.ts\"",
+		"lint": "biome check",
+		"build": "run-s build:*",
+		"build:index": "node cli/generate-index.ts",
+		"build:types": "tsc --project tsconfig.types.json",
+		"build:code": "node cli/build.ts",
+		"version": "run-s version:*",
+		"version:sync-version": "node cli/sync-version.ts",
+		"version:add-jsr": "git add jsr.json"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "2.2.5",
+		"@types/node": "25.2.3",
+		"npm-run-all": "4.1.5",
+		"typescript": "5.5.4"
+	},
+	"renovate": {
+		"extends": [
+			"github>nlibjs/renovate-config"
+		]
+	}
 }

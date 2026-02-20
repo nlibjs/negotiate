@@ -1,3 +1,2 @@
 #!/bin/sh
-npm run build:index
-npx lint-staged
+npm run build:index && git add src/mod.ts
