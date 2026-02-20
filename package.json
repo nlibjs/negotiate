@@ -38,8 +38,6 @@
 		"build:types": "tsc --project tsconfig.types.json",
 		"build:code": "node cli/build.ts",
 		"version": "run-s version:*",
-		"version:changelog": "npx @nlib/changelog --output CHANGELOG.md",
-		"version:add-changelog": "git add CHANGELOG.md",
 		"version:sync-version": "node cli/sync-version.ts",
 		"version:add-jsr": "git add jsr.json"
 	},
