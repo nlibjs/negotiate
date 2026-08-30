@@ -42,7 +42,7 @@
 		"version:add-jsr": "git add jsr.json"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "2.2.5",
+		"@biomejs/biome": "2.5.11",
 		"@types/node": "25.2.3",
 		"typescript": "5.9.3"
 	},
