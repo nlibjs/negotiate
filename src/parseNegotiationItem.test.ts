@@ -85,3 +85,56 @@ test("accept OWS before a semicolon", () => {
 		parameters: { q: "0.9" },
 	});
 });
+test("accept quoted-string values with whitespace and delimiters", () => {
+	assert.deepStrictEqual(
+		parseNegotiationItem('text/html;a="hello world";b="a;b";c="x,y=z"'),
+		{
+			value: "text/html",
+			parameters: { a: "hello world", b: "a;b", c: "x,y=z" },
+		},
+	);
+	assert.deepStrictEqual(parseNegotiationItem('text/html;a="\tx\t" ;b=1'), {
+		value: "text/html",
+		parameters: { a: "\tx\t", b: "1" },
+	});
+});
+test("accept an empty quoted-string", () => {
+	assert.deepStrictEqual(parseNegotiationItem('text/html;a=""'), {
+		value: "text/html",
+		parameters: { a: "" },
+	});
+});
+test("decode quoted-pairs", () => {
+	assert.deepStrictEqual(parseNegotiationItem('text/html;a="x\\"y\\\\z\\w"'), {
+		value: "text/html",
+		parameters: { a: 'x"y\\zw' },
+	});
+});
+test("reject unterminated quoted-strings", () => {
+	for (const input of [
+		'text/html;a="x',
+		'text/html;a="x\\"',
+		'text/html;a="x\\',
+		'text/html;a="x;b=1',
+	]) {
+		assert.throws(() => parseNegotiationItem(input), /^Error: InvalidQuote/);
+	}
+});
+test("reject characters after a quoted-string", () => {
+	assert.throws(
+		() => parseNegotiationItem('text/html;a="x"y'),
+		/^Error: InvalidQuote/,
+	);
+});
+test("reject control characters in a quoted-string", () => {
+	assert.throws(
+		() => parseNegotiationItem('text/html;a="x\ny"'),
+		/^Error: InvalidAttributeValue/,
+	);
+});
+test("reject an empty token value", () => {
+	assert.throws(
+		() => parseNegotiationItem("text/html;a="),
+		/^Error: InvalidAttributeValue/,
+	);
+});

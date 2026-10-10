@@ -2,6 +2,30 @@ import { parseNegotiationItem } from "./parseNegotiationItem.ts";
 
 const OWSRegExp = /^[ \t]+|[ \t]+$/g;
 
+/**
+ * Splits a header value at commas outside quoted-strings.
+ */
+const splitList = function* (input: string): Generator<string> {
+	let start = 0;
+	let quoted = false;
+	for (let pos = 0; pos < input.length; pos++) {
+		const char = input[pos];
+		if (quoted) {
+			if (char === "\\") {
+				pos += 1;
+			} else if (char === '"') {
+				quoted = false;
+			}
+		} else if (char === '"') {
+			quoted = true;
+		} else if (char === ",") {
+			yield input.slice(start, pos);
+			start = pos + 1;
+		}
+	}
+	yield input.slice(start);
+};
+
 export interface ParseAcceptResult<Type extends string> {
 	value: Type;
 	q: number;
@@ -24,7 +48,7 @@ export const parseAcceptStatements = function* (
 	acceptStatements: string,
 	loose = false,
 ): Generator<ParseAcceptResult<string>> {
-	for (const element of acceptStatements.split(",")) {
+	for (const element of splitList(acceptStatements)) {
 		// OWS is allowed around list elements and empty elements are ignored
 		// (RFC 7230 §7)
 		const statement = element.replace(OWSRegExp, "");
