@@ -138,3 +138,12 @@ test("use the more specific language range", () => {
 		"fr",
 	);
 });
+test("respect the preference of a custom matcher among candidates", () => {
+	const matcher = (values: ReadonlyArray<string>, range: string) =>
+		values.find((value) => value === range) ??
+		values.find((value) => value.startsWith(`${range}-`)) ??
+		null;
+	assert.equal(negotiate(["en-GB", "en"], "en", matcher), "en");
+	assert.equal(negotiate(["en-GB", "en"], "en;q=0.5,en-GB", matcher), "en-GB");
+	assert.equal(negotiate(["en-GB", "en"], "en-GB;q=0,en", matcher), "en");
+});
