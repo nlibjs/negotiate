@@ -146,3 +146,51 @@ test("skip an unterminated quoted-string if loose=true", () => {
 	);
 	assert.deepEqual([...parseAcceptStatements(headerValue, true)], []);
 });
+
+test("accept valid qvalues", () => {
+	for (const [qvalue, q] of [
+		["0", 0],
+		["0.", 0],
+		["0.001", 0.001],
+		["0.5", 0.5],
+		["0.999", 0.999],
+		["1", 1],
+		["1.", 1],
+		["1.000", 1],
+	] as const) {
+		assert.deepEqual(
+			[...parseAcceptStatements(`text/html;q=${qvalue}`)],
+			[{ value: "text/html", q }],
+		);
+	}
+});
+
+test("reject malformed qvalues", () => {
+	for (const qvalue of [
+		"0.8oops",
+		"0.1234",
+		"1.001",
+		"1.0000",
+		"1e0",
+		"5e-1",
+		"+1",
+		"-0",
+		".5",
+		"00.5",
+		"0x1",
+		"",
+		"Infinity",
+	]) {
+		const headerValue = `text/html;q=${qvalue},image/png`;
+		assert.throws(
+			() => [...parseAcceptStatements(headerValue)],
+			/^Error: InvalidQuality|^Error: InvalidAttributeValue/,
+			qvalue,
+		);
+		assert.deepEqual(
+			[...parseAcceptStatements(headerValue, true)],
+			[{ value: "image/png", q: 1 }],
+			qvalue,
+		);
+	}
+});

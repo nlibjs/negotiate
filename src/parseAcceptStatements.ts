@@ -1,5 +1,10 @@
 import { parseNegotiationItem } from "./parseNegotiationItem.ts";
 
+/**
+ * https://www.rfc-editor.org/rfc/rfc7231.html#section-5.3.1
+ * qvalue = ( "0" [ "." 0*3DIGIT ] ) / ( "1" [ "." 0*3("0") ] )
+ */
+const QValueRegExp = /^(?:0(?:\.\d{0,3})?|1(?:\.0{0,3})?)$/;
 const OWSRegExp = /^[ \t]+|[ \t]+$/g;
 
 /**
@@ -57,12 +62,11 @@ export const parseAcceptStatements = function* (
 		}
 		try {
 			const { value, parameters } = parseNegotiationItem(statement);
-			const q = Number.parseFloat(parameters.q || "1");
-			if (0 <= q && q <= 1) {
-				yield { value, q };
-			} else {
+			const qvalue = parameters.q ?? "1";
+			if (!QValueRegExp.test(qvalue)) {
 				throw new Error(`InvalidQuality: ${value}`);
 			}
+			yield { value, q: Number(qvalue) };
 		} catch (error: unknown) {
 			if (!loose) {
 				throw error;
