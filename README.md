@@ -11,7 +11,7 @@
 - **Wildcard support** — handles `*`, `type/*`, `*/subtype`, and `*/*` patterns
 - **Extensible** — plug in a custom matcher function to control how values are compared
 - **Fault-tolerant** — `loose` mode silently skips malformed header values to gracefully handle real-world client quirks
-- **Efficient** — exits early once a quality-1.0 match is found
+- **Specificity-aware** — each value gets the quality of its most specific matching range, and `q=0` excludes it
 - **Dual package** — ships both ESM and CJS builds, ready for any modern JS environment
 
 Utilities for content negotiation described in [Section 5.3 of RFC 7231].
