@@ -123,3 +123,26 @@ test("reject whitespace inside a value", () => {
 	);
 	assert.deepEqual([...parseAcceptStatements("text /html", true)], []);
 });
+
+test("do not split at commas in quoted-strings", () => {
+	assert.deepEqual(
+		[
+			...parseAcceptStatements(
+				'text/html;note="a,b",image/png;note="\\",";q=0.5',
+			),
+		],
+		[
+			{ value: "text/html", q: 1 },
+			{ value: "image/png", q: 0.5 },
+		],
+	);
+});
+
+test("skip an unterminated quoted-string if loose=true", () => {
+	const headerValue = 'text/html;note="a,image/png';
+	assert.throws(
+		() => [...parseAcceptStatements(headerValue)],
+		/^Error: InvalidQuote/,
+	);
+	assert.deepEqual([...parseAcceptStatements(headerValue, true)], []);
+});
