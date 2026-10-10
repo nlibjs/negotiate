@@ -72,9 +72,13 @@ export const parseAcceptStatements = function* (
 			if (!QValueRegExp.test(qvalue)) {
 				throw new Error(`InvalidQuality: ${value}`);
 			}
-			const mediaParameters = Object.fromEntries(
-				qIndex < 0 ? entries : entries.slice(0, qIndex),
-			);
+			const mediaEntries = qIndex < 0 ? entries : entries.slice(0, qIndex);
+			// A parameter must not be given twice (RFC 6838 §4.3)
+			const names = new Set(mediaEntries.map(([name]) => name));
+			if (names.size < mediaEntries.length) {
+				throw new Error(`DuplicateParameter: ${value}`);
+			}
+			const mediaParameters = Object.fromEntries(mediaEntries);
 			yield { value, q: Number(qvalue), parameters: mediaParameters };
 		} catch (error: unknown) {
 			if (!loose) {

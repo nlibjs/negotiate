@@ -222,3 +222,16 @@ test("do not treat accept extensions as media type parameters", () => {
 		null,
 	);
 });
+test("skip a range that gives a media type parameter twice", () => {
+	assert.equal(
+		negotiate(["text/html;level=2"], "text/html;level=1;level=2"),
+		null,
+	);
+	assert.equal(
+		negotiate(
+			["text/html;level=2", "text/plain"],
+			"text/html;level=1;level=2,text/plain;q=0.5",
+		),
+		"text/plain",
+	);
+});

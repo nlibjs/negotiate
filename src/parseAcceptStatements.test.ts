@@ -227,3 +227,18 @@ test("keep the original order of parameters around q", () => {
 		[{ value: "text/html", q: 0.5, parameters: { 0: "a" } }],
 	);
 });
+
+test("reject a media type parameter given twice", () => {
+	assert.throws(
+		() => [...parseAcceptStatements("text/html;level=1;level=2")],
+		/^Error: DuplicateParameter/,
+	);
+	assert.deepEqual(
+		[...parseAcceptStatements("text/html;level=1;level=2,text/plain", true)],
+		[{ value: "text/plain", q: 1, parameters: {} }],
+	);
+	assert.deepEqual(
+		[...parseAcceptStatements("text/html;level=1;q=0.5;level=2;ext=a;ext=b")],
+		[{ value: "text/html", q: 0.5, parameters: { level: "1" } }],
+	);
+});
