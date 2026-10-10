@@ -69,3 +69,57 @@ test("ignore invalid q parameters if loose=true", () => {
 	});
 	assert.deepEqual(generator.next(), { done: true, value: undefined });
 });
+
+test("allow OWS around list elements", () => {
+	for (const loose of [false, true]) {
+		assert.deepEqual(
+			[...parseAcceptStatements("text/html, application/json", loose)],
+			[
+				{ value: "text/html", q: 1 },
+				{ value: "application/json", q: 1 },
+			],
+		);
+		assert.deepEqual(
+			[
+				...parseAcceptStatements(
+					" \ttext/html\t,\t application/json \t",
+					loose,
+				),
+			],
+			[
+				{ value: "text/html", q: 1 },
+				{ value: "application/json", q: 1 },
+			],
+		);
+	}
+});
+
+test("allow OWS before semicolons", () => {
+	for (const loose of [false, true]) {
+		assert.deepEqual(
+			[...parseAcceptStatements("text/html ;q=0.9,image/png\t; q=0.8", loose)],
+			[
+				{ value: "text/html", q: 0.9 },
+				{ value: "image/png", q: 0.8 },
+			],
+		);
+	}
+});
+
+test("ignore empty list elements", () => {
+	assert.deepEqual(
+		[...parseAcceptStatements(", text/html, ,\t,image/png,")],
+		[
+			{ value: "text/html", q: 1 },
+			{ value: "image/png", q: 1 },
+		],
+	);
+});
+
+test("reject whitespace inside a value", () => {
+	assert.throws(
+		() => [...parseAcceptStatements("text /html")],
+		/^Error: InvalidValue/,
+	);
+	assert.deepEqual([...parseAcceptStatements("text /html", true)], []);
+});

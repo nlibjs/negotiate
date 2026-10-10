@@ -1,4 +1,5 @@
 const DenseStringRegExp = /^[^\s\x85\u180e\u200b-\u200d\u2060]+$/;
+const TrailingOWSRegExp = /[ \t]+$/;
 
 export interface ParsedNegotiationItem {
 	value: string;
@@ -18,7 +19,8 @@ export interface ParsedNegotiationItem {
 export const parseNegotiationItem = (input: string): ParsedNegotiationItem => {
 	const semiColonIndex = input.indexOf(";");
 	const index = semiColonIndex < 0 ? input.length : semiColonIndex;
-	const value = input.slice(0, index);
+	// OWS is allowed before ";" (RFC 7231 §5.3.2)
+	const value = input.slice(0, index).replace(TrailingOWSRegExp, "");
 	if (!DenseStringRegExp.test(value)) {
 		throw new Error("InvalidValue");
 	}

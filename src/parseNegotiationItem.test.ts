@@ -79,3 +79,9 @@ test("accept the boundary paramter", () => {
 		},
 	);
 });
+test("accept OWS before a semicolon", () => {
+	assert.deepStrictEqual(parseNegotiationItem("text/html \t;q=0.9"), {
+		value: "text/html",
+		parameters: { q: "0.9" },
+	});
+});

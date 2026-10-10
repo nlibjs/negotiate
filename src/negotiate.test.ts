@@ -91,3 +91,11 @@ test("forward", () => {
 		"xxx/yyy",
 	);
 });
+test("negotiate a header value with OWS", () => {
+	assert.equal(
+		negotiate(["application/json"], "text/html, application/json"),
+		"application/json",
+	);
+	assert.equal(negotiate(["text/html"], "text/html ;q=0.9"), "text/html");
+	assert.equal(negotiate(["gzip"], "deflate,\tgzip;q=0.5"), "gzip");
+});

@@ -1,5 +1,7 @@
 import { parseNegotiationItem } from "./parseNegotiationItem.ts";
 
+const OWSRegExp = /^[ \t]+|[ \t]+$/g;
+
 export interface ParseAcceptResult<Type extends string> {
 	value: Type;
 	q: number;
@@ -22,7 +24,13 @@ export const parseAcceptStatements = function* (
 	acceptStatements: string,
 	loose = false,
 ): Generator<ParseAcceptResult<string>> {
-	for (const statement of acceptStatements.split(",")) {
+	for (const element of acceptStatements.split(",")) {
+		// OWS is allowed around list elements and empty elements are ignored
+		// (RFC 7230 §7)
+		const statement = element.replace(OWSRegExp, "");
+		if (!statement) {
+			continue;
+		}
 		try {
 			const { value, parameters } = parseNegotiationItem(statement);
 			const q = Number.parseFloat(parameters.q || "1");
