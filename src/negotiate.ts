@@ -2,7 +2,8 @@ import { parseAcceptStatements } from "./parseAcceptStatements.ts";
 
 /**
  * Returns the item of `arr` matched by the range `value`, or null.
- * `negotiate` calls it with one available value at a time.
+ * If several items match, return the preferred one. `negotiate` calls it
+ * repeatedly with the remaining items to find every match of a range.
  */
 export type NegotiateMatcher<Type extends string> = (
 	arr: ReadonlyArray<Type>,
@@ -87,8 +88,8 @@ const isMoreSpecific = (
  * Each available value gets the quality of the most specific range that
  * matches it, and the value with the highest nonzero quality is returned.
  * A value whose most specific range has `q=0` is never returned.
- * Ties are broken by the order of the ranges in the header, then by the order
- * of `availableValues`.
+ * Ties are broken by the order of the ranges in the header, then by the
+ * matcher's preference, then by the order of `availableValues`.
  */
 export const negotiate = <Value extends string>(
 	availableValues: ReadonlyArray<Value>,
@@ -98,38 +99,56 @@ export const negotiate = <Value extends string>(
 	if (!acceptStatements) {
 		return null;
 	}
-	const ranges = [...parseAcceptStatements(acceptStatements, true)].map(
-		(range, index) => ({
-			...range,
-			index,
-			specificity: getSpecificity(range.value),
-		}),
-	);
-	let result: Value | null = null;
-	let maxQ = 0;
-	let minIndex = Number.POSITIVE_INFINITY;
-	for (const available of availableValues) {
-		let best: (typeof ranges)[number] | null = null;
-		for (const range of ranges) {
-			if (valueMatcher([available], range.value)) {
-				if (
-					!best ||
-					isMoreSpecific(range.specificity, best.specificity) ||
-					(!isMoreSpecific(best.specificity, range.specificity) &&
-						best.q < range.q)
-				) {
-					best = range;
-				}
+	interface Match {
+		q: number;
+		index: number;
+		rank: number;
+		specificity: [number, number];
+	}
+	const bestMatches = new Map<Value, Match>();
+	let index = 0;
+	for (const range of parseAcceptStatements(acceptStatements, true)) {
+		const specificity = getSpecificity(range.value);
+		const remaining = [...availableValues];
+		for (let rank = 0; 0 < remaining.length; rank++) {
+			const matched = valueMatcher(remaining, range.value);
+			const matchedIndex = matched ? remaining.indexOf(matched) : -1;
+			if (matchedIndex < 0) {
+				break;
+			}
+			remaining.splice(matchedIndex, 1);
+			const best = bestMatches.get(matched as Value);
+			if (
+				!best ||
+				isMoreSpecific(specificity, best.specificity) ||
+				(!isMoreSpecific(best.specificity, specificity) && best.q < range.q)
+			) {
+				bestMatches.set(matched as Value, {
+					q: range.q,
+					index,
+					rank,
+					specificity,
+				});
 			}
 		}
+		index += 1;
+	}
+	let result: Value | null = null;
+	let resultMatch: Match | null = null;
+	for (const available of availableValues) {
+		const match = bestMatches.get(available);
 		if (
-			best &&
-			0 < best.q &&
-			(maxQ < best.q || (maxQ === best.q && best.index < minIndex))
+			match &&
+			0 < match.q &&
+			(!resultMatch ||
+				resultMatch.q < match.q ||
+				(resultMatch.q === match.q &&
+					(match.index < resultMatch.index ||
+						(match.index === resultMatch.index &&
+							match.rank < resultMatch.rank))))
 		) {
 			result = available;
-			maxQ = best.q;
-			minIndex = best.index;
+			resultMatch = match;
 		}
 	}
 	return result;
