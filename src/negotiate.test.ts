@@ -99,3 +99,42 @@ test("negotiate a header value with OWS", () => {
 	assert.equal(negotiate(["text/html"], "text/html ;q=0.9"), "text/html");
 	assert.equal(negotiate(["gzip"], "deflate,\tgzip;q=0.5"), "gzip");
 });
+test("never select a value excluded by q=0", () => {
+	assert.equal(negotiate(["text/html"], "text/html;q=0,*/*;q=1"), null);
+	assert.equal(negotiate(["text/html"], "*/*;q=1,text/html;q=0"), null);
+	assert.equal(negotiate(["text/html"], "text/*;q=0"), null);
+	assert.equal(
+		negotiate(["text/html", "text/plain"], "text/html;q=0,text/*"),
+		"text/plain",
+	);
+	assert.equal(negotiate(["gzip", "br"], "gzip;q=0,*"), "br");
+});
+test("use the quality of the most specific range", () => {
+	const available = ["text/html", "application/json"];
+	assert.equal(
+		negotiate(available, "text/*;q=1,text/html;q=0.1,application/json;q=0.9"),
+		"application/json",
+	);
+	assert.equal(
+		negotiate(available, "application/json;q=0.9,text/html;q=0.1,text/*;q=1"),
+		"application/json",
+	);
+	assert.equal(
+		negotiate(available, "*/*;q=1,application/*;q=0.2,text/html;q=0.5"),
+		"text/html",
+	);
+});
+test("RFC 7231 §5.3.2 example", () => {
+	const accept = "text/*;q=0.3, text/html;q=0.7, */*;q=0.5";
+	assert.equal(negotiate(["text/plain", "image/jpeg"], accept), "image/jpeg");
+	assert.equal(negotiate(["text/plain", "text/html"], accept), "text/html");
+	assert.equal(negotiate(["text/plain"], accept), "text/plain");
+});
+test("use the more specific language range", () => {
+	const matcher = (list: ReadonlyArray<string>, range: string) =>
+		list.find((v) => range === "*" || v === range || v.startsWith(`${range}-`));
+	assert.equal(
+		negotiate(["en-US", "fr"], "en;q=0.5,en-US;q=0,*", matcher),
+		"fr",
+	);
+});
