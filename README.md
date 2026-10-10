@@ -48,9 +48,9 @@ negotiate(['eng'], 'en', languageMatcher); // → null
 
 ```typescript
 const generator = parseAcceptStatements('v1,v2;q=0.9,v3;q=0.8');
-generator.next().value; // → {value: 'v1', q: 1}
-generator.next().value; // → {value: 'v2', q: 0.9}
-generator.next().value; // → {value: 'v3', q: 0.8}
+generator.next().value; // → {value: 'v1', q: 1, parameters: {}}
+generator.next().value; // → {value: 'v2', q: 0.9, parameters: {}}
+generator.next().value; // → {value: 'v3', q: 0.8, parameters: {}}
 generator.next(); // → {value: undefined, done: true}
 ```
 

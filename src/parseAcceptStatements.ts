@@ -34,18 +34,22 @@ const splitList = function* (input: string): Generator<string> {
 export interface ParseAcceptResult<Type extends string> {
 	value: Type;
 	q: number;
-	// parameters: Record<string, string>,
+	/**
+	 * Media type parameters (those before `q`). Accept extensions after `q`
+	 * are not included.
+	 */
+	parameters: Record<string, string>;
 }
 
 /**
  * https://www.rfc-editor.org/rfc/rfc7231.html#section-5.3
- * Parses an "Accept-*" value and yield `{value, q}`.
+ * Parses an "Accept-*" value and yield `{value, q, parameters}`.
  * @example
  * ```javascript
  * const generator = parseAcceptStatements('v1,v2;q=0.9,v3;q=0.8')
- * generator.next().value; // → {value: 'v1', q: 1}
- * generator.next().value; // → {value: 'v2', q: 0.9}
- * generator.next().value; // → {value: 'v3', q: 0.8}
+ * generator.next().value; // → {value: 'v1', q: 1, parameters: {}}
+ * generator.next().value; // → {value: 'v2', q: 0.9, parameters: {}}
+ * generator.next().value; // → {value: 'v3', q: 0.8, parameters: {}}
  * generator.next(); // → {value: undefined, done: true}
  * ```
  */
@@ -66,7 +70,14 @@ export const parseAcceptStatements = function* (
 			if (!QValueRegExp.test(qvalue)) {
 				throw new Error(`InvalidQuality: ${value}`);
 			}
-			yield { value, q: Number(qvalue) };
+			const mediaParameters: Record<string, string> = {};
+			for (const [name, parameterValue] of Object.entries(parameters)) {
+				if (name === "q") {
+					break;
+				}
+				mediaParameters[name] = parameterValue;
+			}
+			yield { value, q: Number(qvalue), parameters: mediaParameters };
 		} catch (error: unknown) {
 			if (!loose) {
 				throw error;
