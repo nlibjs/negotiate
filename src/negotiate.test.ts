@@ -138,3 +138,12 @@ test("use the more specific language range", () => {
 		"fr",
 	);
 });
+test("match identifiers case-insensitively", () => {
+	assert.equal(negotiate(["text/html"], "TEXT/HTML"), "text/html");
+	assert.equal(negotiate(["text/html"], "TEXT/*"), "text/html");
+	assert.equal(negotiate(["text/html"], "*/HTML"), "text/html");
+	assert.equal(negotiate(["Text/HTML"], "text/html"), "Text/HTML");
+	assert.equal(negotiate(["gzip"], "GZIP"), "gzip");
+	assert.equal(negotiate(["UTF-8"], "utf-8"), "UTF-8");
+	assert.equal(negotiate(["text/html"], "TEXT/HTML;q=0,*/*"), null);
+});

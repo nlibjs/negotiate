@@ -9,6 +9,18 @@ export type NegotiateMatcher<Type extends string> = (
 	value: string,
 ) => Type | null | undefined;
 
+/**
+ * Lowercases the identifier part (before ";") because media types, content
+ * codings, charsets and language tags are case-insensitive
+ * (RFC 7231 §3.1.1.1, §3.1.2.1, §5.3.3, §5.3.5).
+ */
+const normalize = (value: string) => {
+	const index = value.indexOf(";");
+	return index < 0
+		? value.toLowerCase()
+		: `${value.slice(0, index).toLowerCase()}${value.slice(index)}`;
+};
+
 const defaultMatcher = <Type extends string>(
 	candidateList: ReadonlyArray<Type>,
 	negotiateValue: string,
@@ -18,23 +30,32 @@ const defaultMatcher = <Type extends string>(
 	}
 	const backward = negotiateValue.startsWith("*") ? 2 : 0;
 	const forward = negotiateValue.endsWith("*") ? 1 : 0;
-	const pattern = negotiateValue.slice(
-		backward ? 1 : 0,
-		forward ? -1 : negotiateValue.length,
+	const pattern = normalize(
+		negotiateValue.slice(
+			backward ? 1 : 0,
+			forward ? -1 : negotiateValue.length,
+		),
 	);
 	switch (backward + forward) {
 		case 3:
 			// @example */*
-			return candidateList.find((item) => item.includes(pattern)) || null;
+			return (
+				candidateList.find((item) => normalize(item).includes(pattern)) || null
+			);
 		case 2:
 			// @example */bbb
-			return candidateList.find((item) => item.endsWith(pattern)) || null;
+			return (
+				candidateList.find((item) => normalize(item).endsWith(pattern)) || null
+			);
 		case 1:
 			// @example aaa/*
-			return candidateList.find((item) => item.startsWith(pattern)) || null;
+			return (
+				candidateList.find((item) => normalize(item).startsWith(pattern)) ||
+				null
+			);
 		default:
 			// @example aaa/bbb
-			return candidateList.find((item) => item === pattern) || null;
+			return candidateList.find((item) => normalize(item) === pattern) || null;
 	}
 };
 
