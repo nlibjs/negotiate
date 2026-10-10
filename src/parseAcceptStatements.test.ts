@@ -212,3 +212,18 @@ test("yield media type parameters and drop accept extensions", () => {
 		],
 	);
 });
+
+test("keep the original order of parameters around q", () => {
+	assert.deepEqual(
+		[...parseAcceptStatements("text/html;q=0.5;0=foo")],
+		[{ value: "text/html", q: 0.5, parameters: {} }],
+	);
+	assert.deepEqual(
+		[...parseAcceptStatements("text/html;level=1;q=0.5;level=2")],
+		[{ value: "text/html", q: 0.5, parameters: { level: "1" } }],
+	);
+	assert.deepEqual(
+		[...parseAcceptStatements("text/html;0=a;q=0.5;q=1")],
+		[{ value: "text/html", q: 0.5, parameters: { 0: "a" } }],
+	);
+});

@@ -211,3 +211,14 @@ test("respect the preference of a custom matcher among candidates", () => {
 	assert.equal(negotiate(["en-GB", "en"], "en;q=0.5,en-GB", matcher), "en-GB");
 	assert.equal(negotiate(["en-GB", "en"], "en-GB;q=0,en", matcher), "en");
 });
+test("do not treat accept extensions as media type parameters", () => {
+	assert.equal(negotiate(["text/html"], "text/html;q=0.5;0=foo"), "text/html");
+	assert.equal(
+		negotiate(["text/html;level=1"], "text/html;level=1;q=0.5;level=2"),
+		"text/html;level=1",
+	);
+	assert.equal(
+		negotiate(["text/html;level=2"], "text/html;level=1;q=0.5;level=2"),
+		null,
+	);
+});

@@ -1,4 +1,4 @@
-import { parseNegotiationItem } from "./parseNegotiationItem.ts";
+import { parseNegotiationItemEntries } from "./parseNegotiationItemEntries.private.ts";
 
 /**
  * https://www.rfc-editor.org/rfc/rfc7231.html#section-5.3.1
@@ -65,18 +65,16 @@ export const parseAcceptStatements = function* (
 			continue;
 		}
 		try {
-			const { value, parameters } = parseNegotiationItem(statement);
-			const qvalue = parameters.q ?? "1";
+			const { value, entries } = parseNegotiationItemEntries(statement);
+			// Parameters after the first "q" are accept extensions (RFC 7231 §5.3.2)
+			const qIndex = entries.findIndex(([name]) => name === "q");
+			const qvalue = qIndex < 0 ? "1" : entries[qIndex][1];
 			if (!QValueRegExp.test(qvalue)) {
 				throw new Error(`InvalidQuality: ${value}`);
 			}
-			const mediaParameters: Record<string, string> = {};
-			for (const [name, parameterValue] of Object.entries(parameters)) {
-				if (name === "q") {
-					break;
-				}
-				mediaParameters[name] = parameterValue;
-			}
+			const mediaParameters = Object.fromEntries(
+				qIndex < 0 ? entries : entries.slice(0, qIndex),
+			);
 			yield { value, q: Number(qvalue), parameters: mediaParameters };
 		} catch (error: unknown) {
 			if (!loose) {
