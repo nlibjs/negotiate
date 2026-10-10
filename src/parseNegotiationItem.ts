@@ -1,4 +1,4 @@
-const DenseStringRegExp = /^[^\s\x85᠎​-‍⁠]+$/;
+const DenseStringRegExp = /^[^\s\x85\u180e\u200b-\u200d\u2060]+$/;
 const TrailingOWSRegExp = /[ \t]+$/;
 
 const isOWS = (char: string | undefined) => char === " " || char === "\t";
