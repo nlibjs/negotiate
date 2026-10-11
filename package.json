@@ -44,7 +44,7 @@
 	},
 	"devDependencies": {
 		"@biomejs/biome": "2.2.5",
-		"@nlib/changelog": "0.3.2",
+		"@nlib/changelog": "0.4.0",
 		"@types/node": "25.2.3",
 		"typescript": "5.9.3"
 	},
