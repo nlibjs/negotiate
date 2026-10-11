@@ -1,7 +1,9 @@
 # @nlib/negotiate
 
-[![.github/workflows/test.yml](https://github.com/nlibjs/negotiate/actions/workflows/test.yml/badge.svg)](https://github.com/nlibjs/negotiate/actions/workflows/test.yml)
+[![npm](https://img.shields.io/npm/v/%40nlib%2Fnegotiate)](https://www.npmjs.com/package/@nlib/negotiate)
+[![Test](https://github.com/nlibjs/negotiate/actions/workflows/test.yml/badge.svg)](https://github.com/nlibjs/negotiate/actions/workflows/test.yml)
 [![codecov](https://codecov.io/gh/nlibjs/negotiate/graph/badge.svg?token=uSsvlnhMEO)](https://codecov.io/gh/nlibjs/negotiate)
+[![License](https://img.shields.io/npm/l/%40nlib%2Fnegotiate)](https://github.com/nlibjs/negotiate/blob/main/LICENSE.txt)
 
 **RFC-compliant HTTP content negotiation, made simple with TypeScript.**
 
@@ -27,13 +29,32 @@ negotiate(supported, accept); // → 'text/html'
 negotiate([], accept); // → null
 ```
 
+The default matcher compares media types, codings, language tags and parameter
+names case-insensitively. Parameter values are compared exactly, except
+`charset`, which is case-insensitive. The default matcher treats `*` as a
+wildcard, which fits `Accept`, `Accept-Encoding` and `Accept-Charset`. For
+`Accept-Language`, pass `languageMatcher` so that a range such as `en` selects
+`en-US`.
+
+## languageMatcher
+
+Implements Basic Filtering of [RFC 4647 §3.3.1]: a range matches a tag if it
+equals the tag or is a prefix followed by `-`, case-insensitively.
+
+```typescript
+negotiate(['en-US', 'ja'], 'en;q=0.8, ja;q=0.5', languageMatcher); // → 'en-US'
+negotiate(['eng'], 'en', languageMatcher); // → null
+```
+
+[RFC 4647 §3.3.1]: https://www.rfc-editor.org/rfc/rfc4647.html#section-3.3.1
+
 ## parseAcceptStatements
 
 ```typescript
 const generator = parseAcceptStatements('v1,v2;q=0.9,v3;q=0.8');
-generator.next().value; // → {value: 'v1', q: 1}
-generator.next().value; // → {value: 'v2', q: 0.9}
-generator.next().value; // → {value: 'v3', q: 0.8}
+generator.next().value; // → {value: 'v1', q: 1, parameters: {}}
+generator.next().value; // → {value: 'v2', q: 0.9, parameters: {}}
+generator.next().value; // → {value: 'v3', q: 0.8, parameters: {}}
 generator.next(); // → {value: undefined, done: true}
 ```
 

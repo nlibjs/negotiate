@@ -147,6 +147,61 @@ test("match identifiers case-insensitively", () => {
 	assert.equal(negotiate(["UTF-8"], "utf-8"), "UTF-8");
 	assert.equal(negotiate(["text/html"], "TEXT/HTML;q=0,*/*"), null);
 });
+test("require media type parameters of the range", () => {
+	assert.equal(negotiate(["text/html"], "text/html;level=1"), null);
+	assert.equal(
+		negotiate(["text/html;level=1"], "text/html;level=1"),
+		"text/html;level=1",
+	);
+	assert.equal(
+		negotiate(["text/html;level=2", "text/html;level=1"], "text/html;level=1"),
+		"text/html;level=1",
+	);
+	assert.equal(
+		negotiate(["text/html;level=1;charset=utf-8"], "TEXT/HTML;LEVEL=1"),
+		"text/html;level=1;charset=utf-8",
+	);
+	assert.equal(
+		negotiate(
+			["application/json; charset=UTF-8"],
+			"application/json;charset=utf-8",
+		),
+		"application/json; charset=UTF-8",
+	);
+	assert.equal(
+		negotiate(
+			['application/ld+json;profile="https://example.com/a"'],
+			'application/ld+json;profile="https://example.com/b"',
+		),
+		null,
+	);
+	assert.equal(
+		negotiate(["text/html;level=1"], "text/html"),
+		"text/html;level=1",
+	);
+});
+test("ignore accept extensions after q", () => {
+	assert.equal(negotiate(["text/html"], "text/html;q=0.5;ext=1"), "text/html");
+});
+test("RFC 7231 §5.3.2 example with parameters", () => {
+	const accept =
+		"text/*;q=0.3, text/html;q=0.7, text/html;level=1, text/html;level=2;q=0.4, */*;q=0.5";
+	const cases: Array<[string, number]> = [
+		["text/html;level=1", 1],
+		["text/html", 0.7],
+		["text/plain", 0.3],
+		["image/jpeg", 0.5],
+		["text/html;level=2", 0.4],
+		["text/html;level=3", 0.7],
+	];
+	for (const [a, qa] of cases) {
+		for (const [b, qb] of cases) {
+			if (qa !== qb) {
+				assert.equal(negotiate([a, b], accept), qa > qb ? a : b, `${a} ${b}`);
+			}
+		}
+	}
+});
 test("respect the preference of a custom matcher among candidates", () => {
 	const matcher = (values: ReadonlyArray<string>, range: string) =>
 		values.find((value) => value === range) ??
@@ -155,4 +210,28 @@ test("respect the preference of a custom matcher among candidates", () => {
 	assert.equal(negotiate(["en-GB", "en"], "en", matcher), "en");
 	assert.equal(negotiate(["en-GB", "en"], "en;q=0.5,en-GB", matcher), "en-GB");
 	assert.equal(negotiate(["en-GB", "en"], "en-GB;q=0,en", matcher), "en");
+});
+test("do not treat accept extensions as media type parameters", () => {
+	assert.equal(negotiate(["text/html"], "text/html;q=0.5;0=foo"), "text/html");
+	assert.equal(
+		negotiate(["text/html;level=1"], "text/html;level=1;q=0.5;level=2"),
+		"text/html;level=1",
+	);
+	assert.equal(
+		negotiate(["text/html;level=2"], "text/html;level=1;q=0.5;level=2"),
+		null,
+	);
+});
+test("skip a range that gives a media type parameter twice", () => {
+	assert.equal(
+		negotiate(["text/html;level=2"], "text/html;level=1;level=2"),
+		null,
+	);
+	assert.equal(
+		negotiate(
+			["text/html;level=2", "text/plain"],
+			"text/html;level=1;level=2,text/plain;q=0.5",
+		),
+		"text/plain",
+	);
 });

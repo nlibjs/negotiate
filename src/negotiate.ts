@@ -1,85 +1,119 @@
 import { parseAcceptStatements } from "./parseAcceptStatements.ts";
+import { parseNegotiationItem } from "./parseNegotiationItem.ts";
 
 /**
  * Returns the item of `arr` matched by the range `value`, or null.
+ * `parameters` are the media type parameters of the range (`q` and accept
+ * extensions excluded).
  * If several items match, return the preferred one. `negotiate` calls it
  * repeatedly with the remaining items to find every match of a range.
  */
 export type NegotiateMatcher<Type extends string> = (
 	arr: ReadonlyArray<Type>,
 	value: string,
+	parameters: Readonly<Record<string, string>>,
 ) => Type | null | undefined;
 
 /**
- * Lowercases the identifier part (before ";") because media types, content
- * codings, charsets and language tags are case-insensitive
+ * Splits an available value such as `text/html;level=1` into the lowercased
+ * identifier and its parameters. Identifiers are case-insensitive
  * (RFC 7231 §3.1.1.1, §3.1.2.1, §5.3.3, §5.3.5).
  */
-const normalize = (value: string) => {
-	const index = value.indexOf(";");
-	return index < 0
-		? value.toLowerCase()
-		: `${value.slice(0, index).toLowerCase()}${value.slice(index)}`;
+const parseAvailable = (item: string) => {
+	try {
+		const { value, parameters } = parseNegotiationItem(item);
+		return { value: value.toLowerCase(), parameters };
+	} catch {
+		return { value: item.toLowerCase(), parameters: {} };
+	}
+};
+
+/** The charset parameter value is case-insensitive (RFC 7231 §3.1.1.2). */
+const isSameParameter = (name: string, value1?: string, value2?: string) =>
+	name === "charset"
+		? value1?.toLowerCase() === value2?.toLowerCase()
+		: value1 === value2;
+
+const matchesIdentifier = (
+	value: string,
+	pattern: string,
+	backward: boolean,
+	forward: boolean,
+) => {
+	if (backward && forward) {
+		// @example */*
+		return value.includes(pattern);
+	}
+	if (backward) {
+		// @example */bbb
+		return value.endsWith(pattern);
+	}
+	if (forward) {
+		// @example aaa/*
+		return value.startsWith(pattern);
+	}
+	// @example aaa/bbb
+	return value === pattern;
 };
 
 const defaultMatcher = <Type extends string>(
 	candidateList: ReadonlyArray<Type>,
 	negotiateValue: string,
+	rangeParameters: Readonly<Record<string, string>> = {},
 ): Type | null => {
-	if (negotiateValue === "*") {
-		return candidateList[0];
+	const backward = negotiateValue.startsWith("*");
+	const forward = negotiateValue.endsWith("*");
+	const pattern = negotiateValue
+		.slice(backward ? 1 : 0, forward ? -1 : negotiateValue.length)
+		.toLowerCase();
+	const rangeParameterEntries = Object.entries(rangeParameters);
+	for (const item of candidateList) {
+		const { value, parameters } = parseAvailable(item);
+		if (
+			(negotiateValue === "*" ||
+				matchesIdentifier(value, pattern, backward, forward)) &&
+			rangeParameterEntries.every(([name, parameterValue]) =>
+				isSameParameter(name, parameters[name], parameterValue),
+			)
+		) {
+			return item;
+		}
 	}
-	const backward = negotiateValue.startsWith("*") ? 2 : 0;
-	const forward = negotiateValue.endsWith("*") ? 1 : 0;
-	const pattern = normalize(
-		negotiateValue.slice(
-			backward ? 1 : 0,
-			forward ? -1 : negotiateValue.length,
-		),
-	);
-	switch (backward + forward) {
-		case 3:
-			// @example */*
-			return (
-				candidateList.find((item) => normalize(item).includes(pattern)) || null
-			);
-		case 2:
-			// @example */bbb
-			return (
-				candidateList.find((item) => normalize(item).endsWith(pattern)) || null
-			);
-		case 1:
-			// @example aaa/*
-			return (
-				candidateList.find((item) => normalize(item).startsWith(pattern)) ||
-				null
-			);
-		default:
-			// @example aaa/bbb
-			return candidateList.find((item) => normalize(item) === pattern) || null;
-	}
+	return null;
 };
 
+type Specificity = [wildcards: number, parameters: number, literals: number];
+
 /**
- * Counts wildcards and literal characters of a range so that more specific
- * ranges (`text/html` > `text/*` > `*\/*`, `en-US` > `en` > `*`) win.
+ * Counts wildcards, parameters and literal characters of a range so that more
+ * specific ranges win: `text/html;level=1` > `text/html` > `text/*` > `*\/*`,
+ * `en-US` > `en` > `*`.
  */
-const getSpecificity = (range: string): [number, number] => {
+const getSpecificity = (
+	range: string,
+	parameters: Readonly<Record<string, string>>,
+): Specificity => {
 	let wildcards = 0;
 	for (const char of range) {
 		if (char === "*") {
 			wildcards += 1;
 		}
 	}
-	return [wildcards, range.length - wildcards];
+	return [wildcards, Object.keys(parameters).length, range.length - wildcards];
 };
 
 const isMoreSpecific = (
-	[wildcards1, literals1]: [number, number],
-	[wildcards2, literals2]: [number, number],
-) =>
-	wildcards1 < wildcards2 ||
-	(wildcards1 === wildcards2 && literals2 < literals1);
+	[wildcards1, parameters1, literals1]: Specificity,
+	[wildcards2, parameters2, literals2]: Specificity,
+) => {
+	if (wildcards1 !== wildcards2) {
+		return wildcards1 < wildcards2;
+	}
+	if (parameters1 !== parameters2) {
+		return parameters2 < parameters1;
+	}
+	return literals2 < literals1;
+};
 
 /**
  * https://www.rfc-editor.org/rfc/rfc7231.html#section-5.3
@@ -103,15 +137,15 @@ export const negotiate = <Value extends string>(
 		q: number;
 		index: number;
 		rank: number;
-		specificity: [number, number];
+		specificity: Specificity;
 	}
 	const bestMatches = new Map<Value, Match>();
 	let index = 0;
 	for (const range of parseAcceptStatements(acceptStatements, true)) {
-		const specificity = getSpecificity(range.value);
+		const specificity = getSpecificity(range.value, range.parameters);
 		const remaining = [...availableValues];
 		for (let rank = 0; 0 < remaining.length; rank++) {
-			const matched = valueMatcher(remaining, range.value);
+			const matched = valueMatcher(remaining, range.value, range.parameters);
 			const matchedIndex = matched ? remaining.indexOf(matched) : -1;
 			if (matchedIndex < 0) {
 				break;
