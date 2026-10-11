@@ -27,6 +27,23 @@ negotiate(supported, accept); // → 'text/html'
 negotiate([], accept); // → null
 ```
 
+Values are compared case-insensitively. The default matcher treats `*` as a
+wildcard, which fits `Accept`, `Accept-Encoding` and `Accept-Charset`. For
+`Accept-Language`, pass `languageMatcher` so that a range such as `en` selects
+`en-US`.
+
+## languageMatcher
+
+Implements Basic Filtering of [RFC 4647 §3.3.1]: a range matches a tag if it
+equals the tag or is a prefix followed by `-`, case-insensitively.
+
+```typescript
+negotiate(['en-US', 'ja'], 'en;q=0.8, ja;q=0.5', languageMatcher); // → 'en-US'
+negotiate(['eng'], 'en', languageMatcher); // → null
+```
+
+[RFC 4647 §3.3.1]: https://www.rfc-editor.org/rfc/rfc4647.html#section-3.3.1
+
 ## parseAcceptStatements
 
 ```typescript
