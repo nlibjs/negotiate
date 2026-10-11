@@ -1,2 +1,0 @@
-#!/bin/sh
-npm run build:index && git add src/mod.ts
