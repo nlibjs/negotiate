@@ -12,6 +12,7 @@ jobs:
       id-token: write # npm Trusted Publishing
     outputs:
       released: ${{ steps.version.outputs.released }}
+      tag: ${{ steps.version.outputs.tag }}
     steps:
       - uses: actions/checkout@v7
         with:
