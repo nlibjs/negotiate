@@ -3,6 +3,7 @@
 [![npm](https://img.shields.io/npm/v/%40nlib%2Fnegotiate)](https://www.npmjs.com/package/@nlib/negotiate)
 [![Test](https://github.com/nlibjs/negotiate/actions/workflows/test.yml/badge.svg)](https://github.com/nlibjs/negotiate/actions/workflows/test.yml)
 [![codecov](https://codecov.io/gh/nlibjs/negotiate/graph/badge.svg?token=uSsvlnhMEO)](https://codecov.io/gh/nlibjs/negotiate)
+[![License](https://img.shields.io/npm/l/%40nlib%2Fnegotiate)](https://github.com/nlibjs/negotiate/blob/main/LICENSE.txt)
 
 **RFC-compliant HTTP content negotiation, made simple with TypeScript.**
 
