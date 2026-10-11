@@ -7,19 +7,19 @@ test("parse the accept header", () => {
 	const generator = parseAcceptStatements(headerValue);
 	assert.deepEqual(generator.next(), {
 		done: false,
-		value: { value: "text/html", q: 1 },
+		value: { value: "text/html", q: 1, parameters: {} },
 	});
 	assert.deepEqual(generator.next(), {
 		done: false,
-		value: { value: "application/xml", q: 0.9 },
+		value: { value: "application/xml", q: 0.9, parameters: {} },
 	});
 	assert.deepEqual(generator.next(), {
 		done: false,
-		value: { value: "image/avif", q: 1 },
+		value: { value: "image/avif", q: 1, parameters: {} },
 	});
 	assert.deepEqual(generator.next(), {
 		done: false,
-		value: { value: "*/*", q: 0.8 },
+		value: { value: "*/*", q: 0.8, parameters: {} },
 	});
 	assert.deepEqual(generator.next(), { done: true, value: undefined });
 });
@@ -30,19 +30,19 @@ test("throw at an invalid q parameter", () => {
 	const generator = parseAcceptStatements(headerValue);
 	assert.deepEqual(generator.next(), {
 		done: false,
-		value: { value: "text/html", q: 1 },
+		value: { value: "text/html", q: 1, parameters: {} },
 	});
 	assert.deepEqual(generator.next(), {
 		done: false,
-		value: { value: "application/xml", q: 0.9 },
+		value: { value: "application/xml", q: 0.9, parameters: {} },
 	});
 	assert.deepEqual(generator.next(), {
 		done: false,
-		value: { value: "image/avif", q: 1 },
+		value: { value: "image/avif", q: 1, parameters: {} },
 	});
 	assert.deepEqual(generator.next(), {
 		done: false,
-		value: { value: "*/*", q: 0.8 },
+		value: { value: "*/*", q: 0.8, parameters: {} },
 	});
 	assert.throws(() => generator.next(), /^Error: InvalidQuality/);
 });
@@ -53,19 +53,19 @@ test("ignore invalid q parameters if loose=true", () => {
 	const generator = parseAcceptStatements(headerValue, true);
 	assert.deepEqual(generator.next(), {
 		done: false,
-		value: { value: "text/html", q: 1 },
+		value: { value: "text/html", q: 1, parameters: {} },
 	});
 	assert.deepEqual(generator.next(), {
 		done: false,
-		value: { value: "application/xml", q: 0.9 },
+		value: { value: "application/xml", q: 0.9, parameters: {} },
 	});
 	assert.deepEqual(generator.next(), {
 		done: false,
-		value: { value: "image/avif", q: 1 },
+		value: { value: "image/avif", q: 1, parameters: {} },
 	});
 	assert.deepEqual(generator.next(), {
 		done: false,
-		value: { value: "*/*", q: 0.8 },
+		value: { value: "*/*", q: 0.8, parameters: {} },
 	});
 	assert.deepEqual(generator.next(), { done: true, value: undefined });
 });
@@ -75,8 +75,8 @@ test("allow OWS around list elements", () => {
 		assert.deepEqual(
 			[...parseAcceptStatements("text/html, application/json", loose)],
 			[
-				{ value: "text/html", q: 1 },
-				{ value: "application/json", q: 1 },
+				{ value: "text/html", q: 1, parameters: {} },
+				{ value: "application/json", q: 1, parameters: {} },
 			],
 		);
 		assert.deepEqual(
@@ -87,8 +87,8 @@ test("allow OWS around list elements", () => {
 				),
 			],
 			[
-				{ value: "text/html", q: 1 },
-				{ value: "application/json", q: 1 },
+				{ value: "text/html", q: 1, parameters: {} },
+				{ value: "application/json", q: 1, parameters: {} },
 			],
 		);
 	}
@@ -99,8 +99,8 @@ test("allow OWS before semicolons", () => {
 		assert.deepEqual(
 			[...parseAcceptStatements("text/html ;q=0.9,image/png\t; q=0.8", loose)],
 			[
-				{ value: "text/html", q: 0.9 },
-				{ value: "image/png", q: 0.8 },
+				{ value: "text/html", q: 0.9, parameters: {} },
+				{ value: "image/png", q: 0.8, parameters: {} },
 			],
 		);
 	}
@@ -110,8 +110,8 @@ test("ignore empty list elements", () => {
 	assert.deepEqual(
 		[...parseAcceptStatements(", text/html, ,\t,image/png,")],
 		[
-			{ value: "text/html", q: 1 },
-			{ value: "image/png", q: 1 },
+			{ value: "text/html", q: 1, parameters: {} },
+			{ value: "image/png", q: 1, parameters: {} },
 		],
 	);
 });
@@ -132,8 +132,8 @@ test("do not split at commas in quoted-strings", () => {
 			),
 		],
 		[
-			{ value: "text/html", q: 1 },
-			{ value: "image/png", q: 0.5 },
+			{ value: "text/html", q: 1, parameters: { note: "a,b" } },
+			{ value: "image/png", q: 0.5, parameters: { note: '",' } },
 		],
 	);
 });
@@ -160,7 +160,7 @@ test("accept valid qvalues", () => {
 	] as const) {
 		assert.deepEqual(
 			[...parseAcceptStatements(`text/html;q=${qvalue}`)],
-			[{ value: "text/html", q }],
+			[{ value: "text/html", q, parameters: {} }],
 		);
 	}
 });
@@ -189,8 +189,56 @@ test("reject malformed qvalues", () => {
 		);
 		assert.deepEqual(
 			[...parseAcceptStatements(headerValue, true)],
-			[{ value: "image/png", q: 1 }],
+			[{ value: "image/png", q: 1, parameters: {} }],
 			qvalue,
 		);
 	}
+});
+
+test("yield media type parameters and drop accept extensions", () => {
+	assert.deepEqual(
+		[
+			...parseAcceptStatements(
+				'text/html;level=1;Profile="x y";q=0.5;ext=1,text/plain;ext=2',
+			),
+		],
+		[
+			{
+				value: "text/html",
+				q: 0.5,
+				parameters: { level: "1", profile: "x y" },
+			},
+			{ value: "text/plain", q: 1, parameters: { ext: "2" } },
+		],
+	);
+});
+
+test("keep the original order of parameters around q", () => {
+	assert.deepEqual(
+		[...parseAcceptStatements("text/html;q=0.5;0=foo")],
+		[{ value: "text/html", q: 0.5, parameters: {} }],
+	);
+	assert.deepEqual(
+		[...parseAcceptStatements("text/html;level=1;q=0.5;level=2")],
+		[{ value: "text/html", q: 0.5, parameters: { level: "1" } }],
+	);
+	assert.deepEqual(
+		[...parseAcceptStatements("text/html;0=a;q=0.5;q=1")],
+		[{ value: "text/html", q: 0.5, parameters: { 0: "a" } }],
+	);
+});
+
+test("reject a media type parameter given twice", () => {
+	assert.throws(
+		() => [...parseAcceptStatements("text/html;level=1;level=2")],
+		/^Error: DuplicateParameter/,
+	);
+	assert.deepEqual(
+		[...parseAcceptStatements("text/html;level=1;level=2,text/plain", true)],
+		[{ value: "text/plain", q: 1, parameters: {} }],
+	);
+	assert.deepEqual(
+		[...parseAcceptStatements("text/html;level=1;q=0.5;level=2;ext=a;ext=b")],
+		[{ value: "text/html", q: 0.5, parameters: { level: "1" } }],
+	);
 });

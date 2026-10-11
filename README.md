@@ -27,7 +27,9 @@ negotiate(supported, accept); // → 'text/html'
 negotiate([], accept); // → null
 ```
 
-Values are compared case-insensitively. The default matcher treats `*` as a
+The default matcher compares media types, codings, language tags and parameter
+names case-insensitively. Parameter values are compared exactly, except
+`charset`, which is case-insensitive. The default matcher treats `*` as a
 wildcard, which fits `Accept`, `Accept-Encoding` and `Accept-Charset`. For
 `Accept-Language`, pass `languageMatcher` so that a range such as `en` selects
 `en-US`.
@@ -48,9 +50,9 @@ negotiate(['eng'], 'en', languageMatcher); // → null
 
 ```typescript
 const generator = parseAcceptStatements('v1,v2;q=0.9,v3;q=0.8');
-generator.next().value; // → {value: 'v1', q: 1}
-generator.next().value; // → {value: 'v2', q: 0.9}
-generator.next().value; // → {value: 'v3', q: 0.8}
+generator.next().value; // → {value: 'v1', q: 1, parameters: {}}
+generator.next().value; // → {value: 'v2', q: 0.9, parameters: {}}
+generator.next().value; // → {value: 'v3', q: 0.8, parameters: {}}
 generator.next(); // → {value: undefined, done: true}
 ```
 

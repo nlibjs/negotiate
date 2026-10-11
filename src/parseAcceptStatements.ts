@@ -1,4 +1,4 @@
-import { parseNegotiationItem } from "./parseNegotiationItem.ts";
+import { parseNegotiationItemEntries } from "./parseNegotiationItemEntries.private.ts";
 
 /**
  * https://www.rfc-editor.org/rfc/rfc7231.html#section-5.3.1
@@ -34,18 +34,22 @@ const splitList = function* (input: string): Generator<string> {
 export interface ParseAcceptResult<Type extends string> {
 	value: Type;
 	q: number;
-	// parameters: Record<string, string>,
+	/**
+	 * Media type parameters (those before `q`). Accept extensions after `q`
+	 * are not included.
+	 */
+	parameters: Record<string, string>;
 }
 
 /**
  * https://www.rfc-editor.org/rfc/rfc7231.html#section-5.3
- * Parses an "Accept-*" value and yield `{value, q}`.
+ * Parses an "Accept-*" value and yield `{value, q, parameters}`.
  * @example
  * ```javascript
  * const generator = parseAcceptStatements('v1,v2;q=0.9,v3;q=0.8')
- * generator.next().value; // → {value: 'v1', q: 1}
- * generator.next().value; // → {value: 'v2', q: 0.9}
- * generator.next().value; // → {value: 'v3', q: 0.8}
+ * generator.next().value; // → {value: 'v1', q: 1, parameters: {}}
+ * generator.next().value; // → {value: 'v2', q: 0.9, parameters: {}}
+ * generator.next().value; // → {value: 'v3', q: 0.8, parameters: {}}
  * generator.next(); // → {value: undefined, done: true}
  * ```
  */
@@ -61,12 +65,21 @@ export const parseAcceptStatements = function* (
 			continue;
 		}
 		try {
-			const { value, parameters } = parseNegotiationItem(statement);
-			const qvalue = parameters.q ?? "1";
+			const { value, entries } = parseNegotiationItemEntries(statement);
+			// Parameters after the first "q" are accept extensions (RFC 7231 §5.3.2)
+			const qIndex = entries.findIndex(([name]) => name === "q");
+			const qvalue = qIndex < 0 ? "1" : entries[qIndex][1];
 			if (!QValueRegExp.test(qvalue)) {
 				throw new Error(`InvalidQuality: ${value}`);
 			}
-			yield { value, q: Number(qvalue) };
+			const mediaEntries = qIndex < 0 ? entries : entries.slice(0, qIndex);
+			// A parameter must not be given twice (RFC 6838 §4.3)
+			const names = new Set(mediaEntries.map(([name]) => name));
+			if (names.size < mediaEntries.length) {
+				throw new Error(`DuplicateParameter: ${value}`);
+			}
+			const mediaParameters = Object.fromEntries(mediaEntries);
+			yield { value, q: Number(qvalue), parameters: mediaParameters };
 		} catch (error: unknown) {
 			if (!loose) {
 				throw error;
