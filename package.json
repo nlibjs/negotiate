@@ -29,6 +29,7 @@
 		"!**/*.test.*"
 	],
 	"scripts": {
+		"check:release": "node cli/check-release.ts",
 		"test": "npm run build:index && npm run test:type && npm run test:unit",
 		"test:type": "tsc",
 		"test:unit": "node --test \"src/**/*.test.ts\"",
