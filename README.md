@@ -73,7 +73,8 @@ are needed for JSR publishing.
 
 The setup follows [nlibjs/typing](https://github.com/nlibjs/typing): publishing a
 GitHub Release runs `.github/workflows/release.yml`, with separate npm and JSR jobs.
-The JSR job uses Deno 2 directly, verifies the release metadata and generated entry
+The JSR job installs the existing development dependencies for entry-point
+generation, uses Deno 2 directly, verifies the release metadata and generated entry
 point, and runs a dry-run before publishing. It authenticates with GitHub Actions
 OIDC using `contents: read` and `id-token: write`; no JSR token or secret is needed.
 Pull requests and pushes to `main` run the same publication checks in `TestPublish`,
@@ -82,6 +83,7 @@ with read-only permissions and no actual publication.
 To validate locally without publishing, install Deno 2 and run:
 
 ```sh
+npm ci
 npm run check:release
 npm run build:index
 git diff --exit-code -- src/mod.ts

@@ -87,6 +87,7 @@ jobs:
       - uses: denoland/setup-deno@v2
         with:
           deno-version: 2.x
+      - run: npm ci
       - run: npm run check:release
       - run: npm run build:index
       - run: git diff --exit-code -- src/mod.ts
