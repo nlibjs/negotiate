@@ -5,8 +5,9 @@
 	"exports": "./src/mod.ts",
 	"publish": {
 		"include": [
-			"LICENSE*",
+			"LICENSE.txt",
 			"README.md",
+			"CHANGELOG.md",
 			"src/**/*"
 		],
 		"exclude": [

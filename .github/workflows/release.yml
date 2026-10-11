@@ -27,11 +27,18 @@ jobs:
       id-token: write
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.release.tag_name }}
       - uses: actions/setup-node@v7
         with:
           node-version: 24.x
-          cache: npm
-          registry-url: https://registry.npmjs.org
-      - run: npm ci
-      - run: npm run build
-      - run: npx jsr publish
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: 2.x
+      - run: npm run check:release
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+      - run: npm run build:index
+      - run: git diff --exit-code -- src/mod.ts
+      - run: deno publish --dry-run
+      - run: deno publish
