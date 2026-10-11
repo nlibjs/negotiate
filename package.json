@@ -43,9 +43,9 @@
 		"version:add-files": "git add CHANGELOG.md jsr.json"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "2.2.5",
+		"@biomejs/biome": "2.5.15",
 		"@nlib/changelog": "0.4.0",
-		"@types/node": "25.2.3",
+		"@types/node": "25.9.9",
 		"typescript": "5.9.3"
 	},
 	"renovate": {
