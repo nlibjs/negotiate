@@ -1,7 +1,9 @@
 # @nlib/negotiate
 
-[![.github/workflows/test.yml](https://github.com/nlibjs/negotiate/actions/workflows/test.yml/badge.svg)](https://github.com/nlibjs/negotiate/actions/workflows/test.yml)
+[![npm](https://img.shields.io/npm/v/%40nlib%2Fnegotiate)](https://www.npmjs.com/package/@nlib/negotiate)
+[![Test](https://github.com/nlibjs/negotiate/actions/workflows/test.yml/badge.svg)](https://github.com/nlibjs/negotiate/actions/workflows/test.yml)
 [![codecov](https://codecov.io/gh/nlibjs/negotiate/graph/badge.svg?token=uSsvlnhMEO)](https://codecov.io/gh/nlibjs/negotiate)
+[![License](https://img.shields.io/npm/l/%40nlib%2Fnegotiate)](https://github.com/nlibjs/negotiate/blob/main/LICENSE.txt)
 
 **RFC-compliant HTTP content negotiation, made simple with TypeScript.**
 
@@ -71,8 +73,13 @@ internal modules needed by the public API, plus the license, README and changelo
 Tests and the npm build outputs are excluded. No runtime dependencies or npm build
 are needed for JSR publishing.
 
-The setup follows [nlibjs/typing](https://github.com/nlibjs/typing): publishing a
-GitHub Release runs `.github/workflows/release.yml`, with separate npm and JSR jobs.
+The setup follows [nlibjs/typing](https://github.com/nlibjs/typing) for source
+publication and OIDC authentication. `.github/workflows/release.yml` runs when
+`package.json` changes on `main`, or through manual dispatch. If the version's
+`vX.Y.Z` tag already exists, the release and JSR publication steps are skipped.
+Otherwise, the Release job stages the npm package (unless already published) and
+creates the tag and GitHub Release. The JSR job then checks out the tag supplied
+by `needs.Release.outputs.tag` and uses the same tag for metadata verification.
 The JSR job installs the existing development dependencies for entry-point
 generation, uses Deno 2 directly, verifies the release metadata and generated entry
 point, and runs a dry-run before publishing. It authenticates with GitHub Actions
@@ -95,17 +102,20 @@ The release workflow requires a clean checkout and does not use this option.
 
 To release, first merge the changes and choose the appropriate version bump
 (for example, `npm version minor`). The existing version lifecycle synchronizes
-`jsr.json` with `package.json` and stages it in the version commit. Push that commit
-and its `vX.Y.Z` tag, then publish a GitHub Release for that tag. The JSR job checks
-that the tag, `package.json` and `jsr.json` versions match. Publishing the release
-also runs the existing npm publication job; there is no manual JSR-only trigger.
+`jsr.json` with `package.json` and stages it in the version commit. Push only the
+version commit to `main`; the workflow creates the remote tag and GitHub Release.
+A maintainer must approve the staged npm version on npmjs.com. The GitHub Release
+is created before that approval, and JSR publication runs after the Release job
+succeeds, independently of npm approval. The JSR job verifies that the tag,
+`package.json` and `jsr.json` versions match.
 Versions are immutable on JSR, so use a new version for changed package contents.
 
 By default, JSR also requires the GitHub Actions user who triggers publishing to
-be a member of the `nlib` scope. Publish the release from a scope member's account.
-If releases or workflow reruns are triggered by a bot or another non-member,
+be a member of the `nlib` scope. Push the version commit or manually dispatch the
+workflow from a scope member's account. If pushes, manual runs or workflow reruns
+are triggered by a bot or another non-member,
 review the scope's CI publishing policy in JSR and disable the scope-member
 requirement only if that automation should be allowed. Repository linking and
-OIDC alone do not override that policy. Releases created with GitHub's
-`GITHUB_TOKEN` do not trigger another release workflow; automated release creation
-must use a GitHub App or other credential that permits triggering workflows.
+OIDC alone do not override that policy. JSR publication is a dependent job in the
+same workflow, so it does not rely on a new event from the GitHub Release created
+using `GITHUB_TOKEN`.

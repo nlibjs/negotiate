@@ -38,12 +38,14 @@
 		"build:index": "node cli/generate-index.ts",
 		"build:types": "tsc --project tsconfig.types.json",
 		"build:code": "node cli/build.ts",
-		"version": "npm run version:sync-version && npm run version:add-jsr",
+		"version": "npm run version:changelog && npm run version:sync-version && npm run version:add-files",
 		"version:sync-version": "node cli/sync-version.ts",
-		"version:add-jsr": "git add jsr.json"
+		"version:changelog": "changelog --output CHANGELOG.md",
+		"version:add-files": "git add CHANGELOG.md jsr.json"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "2.2.5",
+		"@nlib/changelog": "0.4.0",
 		"@types/node": "25.2.3",
 		"typescript": "5.9.3"
 	},
