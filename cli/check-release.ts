@@ -16,7 +16,7 @@ if (
 }
 
 const releaseTag = process.env.RELEASE_TAG;
-if (releaseTag !== undefined && releaseTag !== `v${packageJson.version}`) {
+if (releaseTag && releaseTag !== `v${packageJson.version}`) {
 	throw new Error(
 		`Release tag ${releaseTag} must match v${packageJson.version}.`,
 	);
