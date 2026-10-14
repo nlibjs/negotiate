@@ -15,11 +15,4 @@ if (
 	throw new Error("package.json and jsr.json must agree on name and version.");
 }
 
-const releaseTag = process.env.RELEASE_TAG;
-if (releaseTag !== undefined && releaseTag !== `v${packageJson.version}`) {
-	throw new Error(
-		`Release tag ${releaseTag} must match v${packageJson.version}.`,
-	);
-}
-
 console.log(`Release metadata verified: ${jsrJson.name}@${jsrJson.version}`);

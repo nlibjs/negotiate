@@ -41,7 +41,8 @@
 		"version": "npm run version:changelog && npm run version:sync-version && npm run version:add-files",
 		"version:sync-version": "node cli/sync-version.ts",
 		"version:changelog": "changelog --output CHANGELOG.md",
-		"version:add-files": "git add CHANGELOG.md jsr.json"
+		"version:add-files": "git add CHANGELOG.md jsr.json",
+		"release:prepare": "npm run check:release && npm run build && git diff --exit-code -- src"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "2.2.5",

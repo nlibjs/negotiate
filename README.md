@@ -67,25 +67,10 @@ parseNegotiationItem('text/html;charset=utf-8;foo=1');
 
 ## Publishing to JSR
 
-The JSR package name is [`@nlib/negotiate`](https://jsr.io/@nlib/negotiate).
-Its entry point is `src/mod.ts`. JSR receives the TypeScript sources, including
-internal modules needed by the public API, plus the license, README and changelog.
-Tests and the npm build outputs are excluded. No runtime dependencies or npm build
-are needed for JSR publishing.
-
-The setup follows [nlibjs/typing](https://github.com/nlibjs/typing) for source
-publication and OIDC authentication. `.github/workflows/release.yml` runs when
-`package.json` changes on `main`, or through manual dispatch. If the version's
-`vX.Y.Z` tag already exists, the release and JSR publication steps are skipped.
-Otherwise, the Release job stages the npm package (unless already published) and
-creates the tag and GitHub Release. The JSR job then checks out the tag supplied
-by `needs.Release.outputs.tag` and uses the same tag for metadata verification.
-The JSR job installs the existing development dependencies for entry-point
-generation, uses Deno 2 directly, verifies the release metadata and generated entry
-point, and runs a dry-run before publishing. It authenticates with GitHub Actions
-OIDC using `contents: read` and `id-token: write`; no JSR token or secret is needed.
-Pull requests and pushes to `main` run the same publication checks in `TestPublish`,
-with read-only permissions and no actual publication.
+The JSR package is [`@nlib/negotiate`](https://jsr.io/@nlib/negotiate), with
+`src/mod.ts` as its entry point. Follow the shared
+[release procedure](https://github.com/nlibjs/actions#release-procedure).
+The account publishing the GitHub Release must be a member of the JSR `nlib` scope.
 
 To validate locally without publishing, install Deno 2 and run:
 
@@ -96,26 +81,3 @@ npm run build:index
 git diff --exit-code -- src/mod.ts
 deno publish --dry-run
 ```
-
-For a dry-run of uncommitted changes, add `--allow-dirty` to that command.
-The release workflow requires a clean checkout and does not use this option.
-
-To release, first merge the changes and choose the appropriate version bump
-(for example, `npm version minor`). The existing version lifecycle synchronizes
-`jsr.json` with `package.json` and stages it in the version commit. Push only the
-version commit to `main`; the workflow creates the remote tag and GitHub Release.
-A maintainer must approve the staged npm version on npmjs.com. The GitHub Release
-is created before that approval, and JSR publication runs after the Release job
-succeeds, independently of npm approval. The JSR job verifies that the tag,
-`package.json` and `jsr.json` versions match.
-Versions are immutable on JSR, so use a new version for changed package contents.
-
-By default, JSR also requires the GitHub Actions user who triggers publishing to
-be a member of the `nlib` scope. Push the version commit or manually dispatch the
-workflow from a scope member's account. If pushes, manual runs or workflow reruns
-are triggered by a bot or another non-member,
-review the scope's CI publishing policy in JSR and disable the scope-member
-requirement only if that automation should be allowed. Repository linking and
-OIDC alone do not override that policy. JSR publication is a dependent job in the
-same workflow, so it does not rely on a new event from the GitHub Release created
-using `GITHUB_TOKEN`.
