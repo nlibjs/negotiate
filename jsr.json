@@ -1,7 +1,7 @@
 {
 	"name": "@nlib/negotiate",
 	"description": "An RFC-compliant HTTP content negotiation library.",
-	"version": "0.1.4",
+	"version": "0.2.0",
 	"exports": "./src/mod.ts",
 	"publish": {
 		"include": [

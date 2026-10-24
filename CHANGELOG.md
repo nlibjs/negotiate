@@ -1,5 +1,21 @@
 # Changelog
 
+## v0.2.0 (2026-10-24)
+
+### Features
+
+- Add `languageMatcher` for RFC 4647 Basic Filtering of `Accept-Language` ranges, so `en` matches `en-US`.
+- Match media type parameters in `Accept` ranges. A range with parameters only matches available values that have the same parameters. `parseAcceptStatements` now returns a `parameters` object, and custom matchers receive it as a third argument. Parameters after `q` are treated as accept extensions.
+- Publish to JSR as `@nlib/negotiate`.
+
+### Bug Fixes
+
+- Use the most specific matching range to determine each candidate's quality, and respect `q=0` exclusions even when a wildcard also matches. Preserve custom matcher preferences when choosing between candidates.
+- Compare identifiers and parameter names case-insensitively. Compare parameter values exactly, except for `charset`, which is case-insensitive.
+- Accept optional spaces and tabs around header list elements and before semicolons, and ignore empty list elements.
+- Parse quoted parameter values containing whitespace, delimiters, or empty strings, and decode escaped characters.
+- Validate quality values against the RFC 7231 grammar and reject duplicate media type parameters. Strict parsing throws for invalid ranges; loose parsing and `negotiate` skip them.
+
 ## v0.1.4 (2023-04-04)
 
 ### Bug Fixes
