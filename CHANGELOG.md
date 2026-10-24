@@ -5,8 +5,8 @@
 ### Features
 
 - Add `languageMatcher` for RFC 4647 Basic Filtering of `Accept-Language` ranges, so `en` matches `en-US`.
-- Match media type parameters in `Accept` ranges. `parseAcceptStatements` now returns a `parameters` object, and custom matchers receive it as a third argument. Parameters after `q` are treated as accept extensions.
-- Add a JSR package with a TypeScript entry point, and include TypeScript declarations in the npm package alongside ESM and CommonJS builds.
+- Match media type parameters in `Accept` ranges. A range with parameters only matches available values that have the same parameters. `parseAcceptStatements` now returns a `parameters` object, and custom matchers receive it as a third argument. Parameters after `q` are treated as accept extensions.
+- Publish to JSR as `@nlib/negotiate`.
 
 ### Bug Fixes
 
@@ -15,7 +15,6 @@
 - Accept optional spaces and tabs around header list elements and before semicolons, and ignore empty list elements.
 - Parse quoted parameter values containing whitespace, delimiters, or empty strings, and decode escaped characters.
 - Validate quality values against the RFC 7231 grammar and reject duplicate media type parameters. Strict parsing throws for invalid ranges; loose parsing and `negotiate` skip them.
-
 
 ## v0.1.4 (2023-04-04)
 
