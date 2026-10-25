@@ -45,9 +45,9 @@
 		"release:prepare": "npm run check:release && npm run build && git diff --exit-code -- src"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "2.2.5",
-		"@nlib/changelog": "0.4.0",
-		"@types/node": "25.2.3",
+		"@biomejs/biome": "2.6.2",
+		"@nlib/changelog": "0.4.2",
+		"@types/node": "25.9.9",
 		"typescript": "5.9.3"
 	},
 	"renovate": {
