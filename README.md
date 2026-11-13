@@ -23,8 +23,8 @@ Utilities for content negotiation described in [Section 5.3 of RFC 7231].
 ## negotiate
 
 ```typescript
-const supported = ['text/html', 'image/webp'];
-const accept = 'text/html,image/avif,image/webp,image/apng,*/*;q=0.8';
+const supported = ["text/html", "image/webp"];
+const accept = "text/html,image/avif,image/webp,image/apng,*/*;q=0.8";
 negotiate(supported, accept); // → 'text/html'
 negotiate([], accept); // → null
 ```
@@ -42,8 +42,8 @@ Implements Basic Filtering of [RFC 4647 §3.3.1]: a range matches a tag if it
 equals the tag or is a prefix followed by `-`, case-insensitively.
 
 ```typescript
-negotiate(['en-US', 'ja'], 'en;q=0.8, ja;q=0.5', languageMatcher); // → 'en-US'
-negotiate(['eng'], 'en', languageMatcher); // → null
+negotiate(["en-US", "ja"], "en;q=0.8, ja;q=0.5", languageMatcher); // → 'en-US'
+negotiate(["eng"], "en", languageMatcher); // → null
 ```
 
 [RFC 4647 §3.3.1]: https://www.rfc-editor.org/rfc/rfc4647.html#section-3.3.1
@@ -51,7 +51,7 @@ negotiate(['eng'], 'en', languageMatcher); // → null
 ## parseAcceptStatements
 
 ```typescript
-const generator = parseAcceptStatements('v1,v2;q=0.9,v3;q=0.8');
+const generator = parseAcceptStatements("v1,v2;q=0.9,v3;q=0.8");
 generator.next().value; // → {value: 'v1', q: 1, parameters: {}}
 generator.next().value; // → {value: 'v2', q: 0.9, parameters: {}}
 generator.next().value; // → {value: 'v3', q: 0.8, parameters: {}}
@@ -61,7 +61,7 @@ generator.next(); // → {value: undefined, done: true}
 ## parseNegotiationItem
 
 ```typescript
-parseNegotiationItem('text/html;charset=utf-8;foo=1');
+parseNegotiationItem("text/html;charset=utf-8;foo=1");
 // → {value: 'text/html', parameters: {charset: 'utf-8', foo: '1'}}
 ```
 

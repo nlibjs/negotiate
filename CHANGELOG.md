@@ -26,7 +26,6 @@
 
 - add a test for single-star pattern ([3992ec7](https://github.com/nlibjs/negotiate/commit/3992ec72f8877a17998b9b97347cd81a47600b09))
 
-
 ## v0.1.3 (2023-04-04)
 
 ### Features
@@ -42,20 +41,17 @@
 - @nlib/changelog:0.2.3→0.2.4 ([01f3e79](https://github.com/nlibjs/negotiate/commit/01f3e792e64f5720245bc7af693cb64f3020f7ad))
 - @types/jest:28.1.8→29.2.5 eslint-plugin-jest:27.2.0→27.2.1 jest:28.1.3→29.3.1 ts-jest:28.0.8→29.0.3 ([2edd305](https://github.com/nlibjs/negotiate/commit/2edd305dbadf9f70e5d2e8f7bec880b0c348f6a1))
 
-
 ## v0.1.2 (2022-09-04)
 
 ### Dependency Upgrades
 
 - uninstall @nlib/typing ([a941cbf](https://github.com/nlibjs/negotiate/commit/a941cbf2408790691c09fc4d4954187ae5fc5768))
 
-
 ## v0.1.1 (2022-08-07)
 
 ### Bug Fixes
 
 - badge ([9a2f8b2](https://github.com/nlibjs/negotiate/commit/9a2f8b27392ce6bc2b20351c54fbc1831fe61e02))
-
 
 ## v0.1.0 (2022-08-07)
 
@@ -81,5 +77,3 @@
 ### Continuous Integration
 
 - setup CI ([0290bed](https://github.com/nlibjs/negotiate/commit/0290bed8a92583e51d22bcce1aeb5aad474fffde))
-
-
